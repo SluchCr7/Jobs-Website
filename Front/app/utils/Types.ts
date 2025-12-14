@@ -167,7 +167,9 @@ export interface UserProfileType {
 export type Article = {
   id : number , 
   title : string ,
-  excerpt : string
+  excerpt : string, 
+  publishedDate? : string,
+  image? : string ,
 }
 
 export type Testimonial ={

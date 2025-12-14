@@ -133,7 +133,6 @@ export default function CompanyDashboard() {
             <li>Role-based Access</li>
           </ul>
         </section>
-
       </main>
     </div>
   )

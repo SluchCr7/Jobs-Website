@@ -7,7 +7,6 @@ import { HiMenu } from 'react-icons/hi';
 import MobileDrawer from './Drawer';
 import SearchBar from './SearchBar';
 import { links } from '@/app/utils/Data';
-
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dark, setDark] = useState<boolean>(false);
@@ -35,7 +34,7 @@ export default function Header() {
     <>
       <div className={`w-full transition-transform duration-300 z-50 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
         {/* Upper utility bar */}
-        <div className="bg-red-50 dark:bg-gray-800/70 backdrop-blur-sm border-b border-red-200/50 dark:border-gray-700/50">
+        <div className="hidden lg:flex bg-red-50 dark:bg-gray-800/70 backdrop-blur-sm border-b border-red-200/50 dark:border-gray-700/50">
           <div className="max-w-7xl mx-auto px-5 py-2 flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
             <div className="flex items-center gap-6">
               <Link href="/Pages//Help" className="hover:text-red-600 font-medium transition">Help</Link>
@@ -63,15 +62,13 @@ export default function Header() {
               <div className="flex items-center gap-6">
                 <Link href="/" className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">JF</div>
-                  <span className="font-semibold text-lg">JobFinder</span>
+                  <span className="hidden lg:flex font-semibold text-lg">JobFinder</span>
                 </Link>
 
                 <nav className="hidden md:flex items-center gap-4 text-sm">
                   <Link href="/" className="hover:underline">Home</Link>
                   <Link href="/Pages/Jobs" className="hover:underline">Jobs</Link>
                   <Link href="/Pages/Companies" className="hover:underline">Companies</Link>
-                  <Link href="/Pages/Talents" className="hover:underline">Talents</Link>
-                  <Link href="/Pages/Blog" className="hover:underline">Blog</Link>
                 </nav>
               </div>
 
@@ -84,7 +81,7 @@ export default function Header() {
                   <FiBell />
                   <span className="absolute -top-1 -right-1 text-xs bg-red-500 text-white rounded-full px-1">3</span>
                 </button>
-
+                <button onClick={() => setDrawerOpen(true)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"><HiMenu/></button>
                 <div className="hidden sm:block">
                   <Link href="/post-job" className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold">Post a Job</Link>
                 </div>
@@ -105,9 +102,4 @@ export default function Header() {
   );
 }
 
-              {/* Mobile search icon */}
-              <div className="md:hidden">
-                <button className="p-2 rounded-md hover:bg-red-100 dark:hover:bg-white/10 transition" aria-label="Search">
-                  <FiSearch className="text-gray-700 dark:text-gray-200 text-lg" />
-                </button>
-              </div>
+              
