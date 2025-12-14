@@ -8,11 +8,11 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // هنا يمكنك إضافة منطق تسجيل الدخول
     console.log({ email, password });
   };
+
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-gray-50">

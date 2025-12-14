@@ -9,7 +9,13 @@ import Link from 'next/link';
 const UserProfilePage = () => {
   const renderImage = (url?: string, alt?: string, className?: string) => (
     url ? (
-      <Image src={url} alt={alt} width={500} height={500} className={className} />
+      <Image
+        src={url}
+        alt={alt ?? "Image"} // fallback إذا لم يُعطَ alt
+        width={500}
+        height={500}
+        className={className}
+      />
     ) : (
       <div className={`flex items-center justify-center bg-gray-200 text-gray-400 ${className}`}>
         <FiCameraOff size={50} />

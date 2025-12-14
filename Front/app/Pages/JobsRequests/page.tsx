@@ -15,18 +15,24 @@ interface AppliedJob {
   status: "Pending" | "Accepted" | "Rejected";
 }
 
-const appliedJobs: AppliedJob[] = jobs.map((job, idx) => ({
-  id: job.id,
-  title: job.title,
-  company: job.company,
-  companyLogo: job.logoUrl,
-  appliedDate: "2025-12-09",
-  employmentType: job.employmentType || "Full-time",
-  status: ["Pending", "Accepted", "Rejected"][idx % 3] as
-    | "Pending"
-    | "Accepted"
-    | "Rejected",
-}));
+const appliedJobs: AppliedJob[] = jobs.map((job, idx) => {
+  const logo = job.logo ?? "/placeholder.png";
+  const employmentType = job.employmentType ?? "full_time";
+
+  return {
+    id: job.id,
+    title: job.title,
+    company: job.company,
+    companyLogo: logo,
+    appliedDate: "2025-12-09",
+    employmentType,
+    status: ["Pending", "Accepted", "Rejected"][idx % 3] as
+      | "Pending"
+      | "Accepted"
+      | "Rejected",
+  };
+});
+
 
 export default function MyApplicationsPage() {
   const [filter, setFilter] = useState<"All" | "Pending" | "Accepted" | "Rejected">("All");

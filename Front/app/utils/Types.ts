@@ -114,6 +114,16 @@ export type Topic = {
 };
 
 
+export type TopicHelp = {
+  id: number;
+  title: string;
+  icon: ComponentType<{ className?: string }>;
+  faqs: {
+    q: string;
+    a: string;
+  }[];
+};
+
 export interface UserProfileType {
   id: number;
   fullName: string;

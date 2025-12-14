@@ -188,7 +188,7 @@ export const jobs: JobsData[] = [
     employmentType: "full_time",
     postedDate: "2024-12-06",
     hot: true,
-    logo: "/logos/shopify.svg",
+  logo: "/logos/shopify.svg",
   },
 
   {

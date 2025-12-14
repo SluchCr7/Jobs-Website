@@ -1,22 +1,34 @@
 'use client';
 
+import { TopicHelp } from '@/app/utils/Types';
 import React, { useState } from 'react';
 import { FiSearch, FiChevronDown, FiChevronUp, FiMail, FiHelpCircle, FiUsers, FiBriefcase } from 'react-icons/fi';
-import {Topic} from "@/app/utils/Types"
-const topics : Topic[] = [
-  { id: 1, title: 'Account', icon: <FiUsers className="text-red-500 w-6 h-6" />, faqs: [
-      { q: 'How to create an account?', a: 'Click "Get Started" and fill the form to register.' },
-      { q: 'How to reset password?', a: 'Use "Forgot Password" link on login page.' },
-    ] 
+const topics: TopicHelp[] = [
+  {
+    id: 1,
+    title: "Account",
+    icon: FiUsers,
+    faqs: [
+      { q: "How to create an account?", a: 'Click "Get Started" and fill the form to register.' },
+      { q: "How to reset password?", a: 'Use "Forgot Password" link on login page.' },
+    ],
   },
-  { id: 2, title: 'Jobs', icon: <FiBriefcase className="text-red-500 w-6 h-6" />, faqs: [
-      { q: 'How to save jobs?', a: 'Click the "Save Job" button on any job listing.' },
-      { q: 'How to apply for jobs?', a: 'Open the job and click "Apply Now".' },
-    ] 
+  {
+    id: 2,
+    title: "Jobs",
+    icon: FiBriefcase,
+    faqs: [
+      { q: "How to save jobs?", a: 'Click the "Save Job" button on any job listing.' },
+      { q: "How to apply for jobs?", a: 'Open the job and click "Apply Now".' },
+    ],
   },
-  { id: 3, title: 'Support', icon: <FiHelpCircle className="text-red-500 w-6 h-6" />, faqs: [
-      { q: 'How to contact support?', a: 'Use the contact form below or email support@jobfinder.com.' },
-    ] 
+  {
+    id: 3,
+    title: "Support",
+    icon: FiHelpCircle,
+    faqs: [
+      { q: "How to contact support?", a: "Use the contact form below or email support@jobfinder.com." },
+    ],
   },
 ];
 
@@ -57,7 +69,7 @@ export default function HelpPagePro() {
         {topics.map(topic => (
           <div key={topic.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition p-5">
             <div className="flex items-center gap-3 mb-4">
-              {topic.icon}
+              <topic.icon className="text-red-500 w-6 h-6"/>
               <h2 className="text-xl font-semibold">{topic.title}</h2>
             </div>
             <div className="space-y-2">

@@ -17,15 +17,21 @@ const CompanyPage = () => {
     return <div className="text-center p-10 text-xl">Company not found</div>;
   }
 
-  const renderImage = (url?: string, alt?: string) => (
+  const renderImage = (url?: string, alt: string = "Image") => (
     url ? (
-      <Image src={url} alt={alt} width={500} height={500} className="w-full h-48 object-contain rounded shadow" />
-    ) : (
-      <div className="w-full h-48 flex flex-col items-center justify-center bg-gray-200 rounded shadow text-gray-400">
-        <FiCameraOff size={40} />
-        <span className="mt-2">No Image</span>
-      </div>
-    )
+      <Image
+        src={url}
+        alt={alt}
+        width={500}
+        height={500}
+        className="w-full h-48 object-contain rounded shadow"
+        />
+      ) : (
+        <div className="w-full h-48 flex flex-col items-center justify-center bg-gray-200 rounded shadow text-gray-400">
+          <FiCameraOff size={40} />
+          <span className="mt-2">No Image</span>
+        </div>
+      )
   );
 
   // معلومات استاتيكية إضافية
