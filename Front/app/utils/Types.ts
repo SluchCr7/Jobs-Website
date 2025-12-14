@@ -35,7 +35,7 @@ export interface LatestJob {
 // روابط التواصل الاجتماعي
 export interface SocialLink {
   id: number;
-  Icon: ComponentType<{ className?: string; size?: number }>;; // تمرير الـ Component مباشرة
+  Icon: ComponentType<{ className?: string; size?: number }>; // تمرير الـ Component مباشرة
   url: string;
 }
 
@@ -109,7 +109,7 @@ type FAQ = {
 export type Topic = {
   id: number;
   title: string;
-  icon: ComponentType<{ className?: string; size?: number }>;;
+  icon: ComponentType<{ className?: string; size?: number }>;
   faqs: FAQ[];
 };
 
@@ -165,29 +165,30 @@ export interface UserProfileType {
 
 
 export type Article = {
-  id : number , 
-  title : string ,
-  excerpt : string, 
-  publishedDate? : string,
-  image? : string ,
+  id : number ; 
+  title : string ;
+  excerpt : string; 
+  publishedDate? : string;
+  image? : string ;
 }
 
 export type Testimonial ={
-  id : number , 
-  name : string, 
-  role : string,
-  quote : string
+  id : number ; 
+  name : string; 
+  role : string;
+  quote : string;
+  avatar?: string;
 }
 
 export type category = {
-  id : number,
-  count: number
-  name : string,
-  icon : string
+  id : number;
+  count: number;
+  name : string;
+  icon: string;
 }
 export type State = {
-  id : number,
-  label: string
-  value : string,
+  id: number;
+  label: string;
+  value: string;
   icon : ComponentType
 }

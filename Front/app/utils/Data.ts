@@ -343,9 +343,9 @@ export const categories : category[] = [
 ];
 
 export const testimonials : Testimonial[] = [
-  { id: 1, name: "Sara Ahmed", role: "Frontend Developer", quote: "I found my dream role in 2 weeks. The process was smooth and the listings were high quality." },
-  { id: 2, name: "Khaled Mostafa", role: "Product Manager", quote: "Great platform for both candidates and recruiters — excellent UX and fast responses." },
-  { id: 3, name: "Nora Ali", role: "Data Scientist", quote: "Love the search suggestions and the clear job cards — saved me a lot of time." },
+  { id: 1,avatar: "", name: "Sara Ahmed", role: "Frontend Developer", quote: "I found my dream role in 2 weeks. The process was smooth and the listings were high quality." },
+  { id: 2,avatar: "", name: "Khaled Mostafa", role: "Product Manager", quote: "Great platform for both candidates and recruiters — excellent UX and fast responses." },
+  { id: 3,avatar: "", name: "Nora Ali", role: "Data Scientist", quote: "Love the search suggestions and the clear job cards — saved me a lot of time." },
 ];
 
 export const articles : Article[] = [
