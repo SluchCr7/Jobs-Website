@@ -456,12 +456,12 @@ export default function EnhancedHomePage(): JSX.Element {
                     <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-4">{article.excerpt}</p>
                   </div>
                   <div className="mt-4 flex items-center justify-between text-xs md:text-sm text-gray-400 dark:text-gray-500">
-                    <span>
-                      {article.publishedDate
-                        ? new Date(article.publishedDate).toLocaleDateString()
-                        : "—"}
-                    </span>                 
-                    <Link href={`/blog`} className="text-blue-600 hover:underline font-medium transition-colors">Read →</Link>
+                  <span>
+                    {article.publishedDate
+                      ? new Date(article.publishedDate).toLocaleDateString()
+                      : "—"}
+                  </span>                 
+                  <Link href={`/blog`} className="text-blue-600 hover:underline font-medium transition-colors">Read →</Link>
                   </div>
                 </div>
               </motion.article>

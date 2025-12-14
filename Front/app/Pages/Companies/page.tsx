@@ -55,7 +55,8 @@ const page = () => {
               </span>
 
               <Link
-                href={company.website}
+                // href={company.website}
+                href={`/Pages/Company/${company.id}`}
                 target="_blank"
                 className="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition"
               >

@@ -7,8 +7,10 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { HiSquares2X2, HiBars3 } from "react-icons/hi2";
 import { FaBuilding, FaMapMarkerAlt, FaMoneyBillWave, FaLaptopCode } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export default function JobsPage() {
+  const route = useRouter()
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [filters, setFilters] = useState<FiltersType>({
     keyword: "",
@@ -67,7 +69,7 @@ export default function JobsPage() {
         {/* Jobs Container */}
         <motion.div className={view==='grid' ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
           {currentJobs.map(job => (
-            <Link href={`/Pages/Job/${job.id}`} key={job.id} className={view==='grid' ? 'bg-white shadow-lg rounded-3xl border p-6 flex flex-col justify-between hover:shadow-2xl transition group' : 'bg-white shadow-md rounded-2xl border p-5 flex flex-row items-start gap-6 hover:shadow-lg transition group'}>
+            <div key={job.id} className={view==='grid' ? 'bg-white shadow-lg rounded-3xl border p-6 flex flex-col justify-between hover:shadow-2xl transition group' : 'bg-white shadow-md rounded-2xl border p-5 flex flex-row items-start gap-6 hover:shadow-lg transition group'}>
               {/* Logo */}
               <div className={view==='grid' ? 'w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center border mb-4' : 'w-16 h-16 rounded-xl bg-gray-50 flex items-center justify-center border flex-shrink-0'}>
                 {job.logo ? <img src={job.logo} alt={job.company} className="w-full h-full object-contain rounded" /> : <span className="font-bold text-gray-700">{job.company[0]}</span>}
@@ -96,10 +98,10 @@ export default function JobsPage() {
               </div>
 
               {/* Apply Button */}
-              <button className={view==='grid' ? 'mt-4 w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition' : 'self-center flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition'}>
+              <button onClick={()=> route.push(`Pages/Job/${job.id}`)} className={view==='grid' ? 'mt-4 w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition' : 'self-center flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition'}>
                 View Details
               </button>
-            </Link>
+            </div>
           ))}
         </motion.div>
 

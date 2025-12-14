@@ -34,7 +34,7 @@ export default function Header() {
     <>
       <div className={`w-full transition-transform duration-300 z-50 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
         {/* Upper utility bar */}
-        <div className="hidden lg:flex bg-red-50 dark:bg-gray-800/70 backdrop-blur-sm border-b border-red-200/50 dark:border-gray-700/50">
+        <div className="hidden lg:block bg-red-50 dark:bg-gray-800/70 backdrop-blur-sm border-b border-red-200/50 dark:border-gray-700/50">
           <div className="max-w-7xl mx-auto px-5 py-2 flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
             <div className="flex items-center gap-6">
               <Link href="/Pages//Help" className="hover:text-red-600 font-medium transition">Help</Link>
@@ -42,7 +42,7 @@ export default function Header() {
               <Link href="/Pages/Companies" className="hover:text-red-600 font-medium transition">Companies</Link>
             </div>
             <div className="flex items-center gap-6">
-              <Link href="/Pages/saved" className="hover:text-red-600 font-medium transition">Saved Jobs</Link>
+              <Link href="/Pages/Saved" className="hover:text-red-600 font-medium transition">Saved Jobs</Link>
               <button
                 aria-label="Toggle theme"
                 onClick={() => setDark(d => !d)}
@@ -73,15 +73,13 @@ export default function Header() {
               </div>
 
               <div className="flex items-center gap-3">
-                <button aria-label="Toggle theme" onClick={() => setDark(d => !d)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                  {dark ? <FiSun /> : <FiMoon />}
-                </button>
+
 
                 <button aria-label="Notifications" className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition relative">
                   <FiBell />
                   <span className="absolute -top-1 -right-1 text-xs bg-red-500 text-white rounded-full px-1">3</span>
                 </button>
-                <button onClick={() => setDrawerOpen(true)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"><HiMenu/></button>
+                <button onClick={() => setDrawerOpen(true)} className="flex md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"><HiMenu/></button>
                 <div className="hidden sm:block">
                   <Link href="/post-job" className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold">Post a Job</Link>
                 </div>
