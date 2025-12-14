@@ -5,8 +5,8 @@ import Header from "./Components/Header";
 import InteractiveFooter from "./Components/Footer";
 
 export const metadata: Metadata = {
-  title: "YourJOp",
-  description: "YourJOp is a job search platform that helps you find your dream job.",
+  title: "JobFinder",
+  description: "JobFinder is a job search platform that helps you find your dream job.",
 };
 
 // 🟢 استيراد الخط الإنجليزي

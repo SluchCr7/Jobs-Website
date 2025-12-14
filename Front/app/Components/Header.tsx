@@ -7,7 +7,9 @@ import { HiMenu } from 'react-icons/hi';
 import MobileDrawer from './Drawer';
 import SearchBar from './SearchBar';
 import { links } from '@/app/utils/Data';
+import { useRouter } from 'next/navigation';
 export default function Header() {
+  const route = useRouter()
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dark, setDark] = useState<boolean>(false);
   const [showHeader, setShowHeader] = useState(true);
@@ -81,11 +83,11 @@ export default function Header() {
                 </button>
                 <button onClick={() => setDrawerOpen(true)} className="flex md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"><HiMenu/></button>
                 <div className="hidden sm:block">
-                  <Link href="/post-job" className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold">Post a Job</Link>
+                  <Link href="/Pages/AddJob" className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold">Post a Job</Link>
                 </div>
 
                 <div className="ml-2">
-                  <button className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">A</button>
+                  <button onClick={()=> route.push('/Pages/Profile')} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">A</button>
                 </div>
               </div>
             </div>
