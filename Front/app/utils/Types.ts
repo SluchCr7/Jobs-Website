@@ -35,7 +35,7 @@ export interface LatestJob {
 // روابط التواصل الاجتماعي
 export interface SocialLink {
   id: number;
-  Icon: ComponentType; // تمرير الـ Component مباشرة
+  Icon: ComponentType<{ className?: string; size?: number }>;; // تمرير الـ Component مباشرة
   url: string;
 }
 
@@ -109,7 +109,7 @@ type FAQ = {
 export type Topic = {
   id: number;
   title: string;
-  icon: ReactNode;
+  icon: ComponentType<{ className?: string; size?: number }>;;
   faqs: FAQ[];
 };
 

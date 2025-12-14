@@ -214,7 +214,7 @@ export default function EnhancedHomePage(): JSX.Element {
               <div className="mt-4 flex gap-6 flex-wrap">
                 {stats.map(s => (
                   <div key={s.id} className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-blue-50 dark:bg-blue-900/20"><s.icon className="text-blue-600" /></div>
+                    <div className="p-2 rounded-full bg-blue-50 dark:bg-blue-900/20"><s.icon /></div>
                     <div>
                       <p className="font-semibold">{s.value}</p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">{s.label}</p>

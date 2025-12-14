@@ -25,7 +25,7 @@ const InteractiveFooter = () => {
           <p className="text-gray-400">Find your dream job and connect with top companies worldwide. Join our community today!</p>
           <div className="flex gap-4 mt-2">
             {socialLinks.map(link => (
-              <a key={link.id} href={link.url} className="hover:text-white transition transform hover:scale-110">{link.Icon}</a>
+              <a key={link.id} href={link.url} className="hover:text-white transition transform hover:scale-110"><link.Icon/></a>
             ))}
           </div>
         </div>
