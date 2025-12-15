@@ -180,6 +180,10 @@ export type Article = {
   excerpt : string; 
   publishedDate? : string;
   image? : string ;
+  content : string;
+  author: string;
+  publishedAt: string;
+  tags: string[]
 }
 
 export type Testimonial ={
@@ -188,6 +192,7 @@ export type Testimonial ={
   role : string;
   quote : string;
   avatar?: string;
+
 }
 
 export type category = {

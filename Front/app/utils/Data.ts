@@ -347,12 +347,71 @@ export const testimonials : Testimonial[] = [
   { id: 2,avatar: "", name: "Khaled Mostafa", role: "Product Manager", quote: "Great platform for both candidates and recruiters — excellent UX and fast responses." },
   { id: 3,avatar: "", name: "Nora Ali", role: "Data Scientist", quote: "Love the search suggestions and the clear job cards — saved me a lot of time." },
 ];
+export const articles: Article[] = [
+  {
+    id: 1,
+    title: "How to Ace Technical Interviews in 2025",
+    excerpt:
+      "A comprehensive, up-to-date guide to mastering technical interviews, including coding challenges, system design, and behavioral assessments.",
+    content: `
+Technical interviews in 2025 require a balanced combination of strong fundamentals, practical problem-solving skills, and clear communication.
 
-export const articles : Article[] = [
-  { id: 1, title: "How to Ace Technical Interviews in 2025", excerpt: "A practical guide to preparing for coding interviews, system design and behavioral questions." },
-  { id: 2, title: "Remote Work: Best Practices", excerpt: "Tips to stay productive and build a thriving remote career." },
-  { id: 3, title: "Building Your Personal Brand", excerpt: "Leverage LinkedIn and your portfolio to stand out to recruiters." },
+This guide covers:
+- Coding interviews: Focus on data structures (arrays, trees, graphs) and algorithms (dynamic programming, greedy strategies). Practice on platforms such as LeetCode and Codeforces with time constraints.
+- System design interviews: Learn how to design scalable systems, understand trade-offs, and communicate architectural decisions clearly. Topics include microservices, databases, caching, and cloud-native patterns.
+- Behavioral interviews: Prepare structured answers using frameworks like STAR (Situation, Task, Action, Result) to demonstrate teamwork, leadership, and problem-solving.
+- AI-assisted interviews: Understand how to work alongside AI tools responsibly, as interviewers increasingly test collaboration with modern developer tooling.
+
+Consistency, mock interviews, and continuous feedback are key factors in achieving success.
+    `,
+    author: "Editorial Team",
+    publishedAt: "2025-01-15",
+    tags: ["Careers", "Technical Interviews", "Software Engineering"]
+  },
+  {
+    id: 2,
+    title: "Remote Work: Best Practices",
+    excerpt:
+      "Actionable strategies to remain productive, collaborative, and visible while building a successful remote career.",
+    content: `
+Remote work has become a permanent fixture in the global workforce. To thrive remotely, professionals must adopt intentional habits and tools.
+
+Key best practices include:
+- Structuring your workday with clear schedules and defined goals.
+- Creating a dedicated workspace that minimizes distractions and supports focus.
+- Mastering asynchronous communication using tools like Slack, Notion, and project management platforms.
+- Maintaining visibility by documenting progress, sharing updates, and actively participating in virtual meetings.
+- Prioritizing mental health through breaks, boundaries, and regular social interaction.
+
+Successful remote professionals treat communication and self-management as core skills, not optional extras.
+    `,
+    author: "Remote Work Council",
+    publishedAt: "2025-02-03",
+    tags: ["Remote Work", "Productivity", "Career Growth"]
+  },
+  {
+    id: 3,
+    title: "Building Your Personal Brand",
+    excerpt:
+      "A strategic approach to leveraging LinkedIn, portfolios, and content creation to attract recruiters and career opportunities.",
+    content: `
+In a competitive job market, a strong personal brand differentiates you from other professionals with similar technical skills.
+
+This article explains how to:
+- Optimize your LinkedIn profile with a clear headline, quantified achievements, and consistent activity.
+- Build a professional portfolio showcasing real projects, case studies, and measurable outcomes.
+- Share insights through posts, blogs, or talks to demonstrate thought leadership in your field.
+- Maintain brand consistency across platforms, including GitHub, personal websites, and social media.
+- Engage authentically with industry peers to grow credibility and network reach.
+
+A well-crafted personal brand positions you as a solution provider rather than just a job seeker.
+    `,
+    author: "Career Strategy Desk",
+    publishedAt: "2025-02-20",
+    tags: ["Personal Branding", "LinkedIn", "Professional Development"]
+  }
 ];
+
 
 export const stats : State[] = [
   { id: 1, label: "Available Jobs", value: "12,400+", icon: HiOutlineSparkles },
