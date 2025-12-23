@@ -3,14 +3,13 @@ import React, { useState, useMemo } from "react";
 import Filters from "@/app/Components/Filters";
 import { jobs } from "@/app/utils/Data";
 import { JobsData, FiltersType } from "@/app/utils/Types";
-import { motion } from "framer-motion";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { HiSquares2X2, HiBars3 } from "react-icons/hi2";
-import { FaBuilding, FaMapMarkerAlt, FaMoneyBillWave, FaLaptopCode } from "react-icons/fa";
+import JobCard from "@/app/Components/JobCard";
 import { useRouter } from "next/navigation";
 
 export default function JobsPage() {
-  const route = useRouter()
+  const router = useRouter()
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [filters, setFilters] = useState<FiltersType>({
     keyword: "",
@@ -47,71 +46,93 @@ export default function JobsPage() {
   const currentJobs = filteredJobs.slice(indexOfFirst, indexOfLast);
 
   return (
-    <div className="w-full flex flex-col lg:flex-row bg-gray-50 min-h-screen px-4 md:px-6 py-8 gap-6">
-      {/* Filters Sidebar */}
-      <Filters setFilters={setFilters} />
+    <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-900 pt-20 pb-12 transition-colors font-sans">
+      <div className="container-custom flex flex-col lg:flex-row gap-8">
 
-      <div className="flex-1 flex flex-col gap-6">
-        {/* Header & View Toggle */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Job Listings</h2>
-          <div className="flex items-center gap-2">
-            <span className="text-gray-600 text-sm">View as:</span>
-            <button onClick={() => setView("grid")} className={`p-2 rounded-lg ${view==='grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:bg-gray-100'}`}>
-              <HiSquares2X2 size={22} />
-            </button>
-            <button onClick={() => setView("list")} className={`p-2 rounded-lg ${view==='list' ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:bg-gray-100'}`}>
-              <HiBars3 size={22} />
-            </button>
-          </div>
+        {/* Sidebar */}
+        <div className="lg:w-80 shrink-0">
+          <Filters setFilters={setFilters} />
         </div>
 
-        {/* Jobs Container */}
-        <motion.div className={view==='grid' ? 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6' : 'flex flex-col gap-4'}>
-          {currentJobs.map(job => (
-            <div key={job.id} className={view==='grid' ? 'bg-white shadow-lg rounded-3xl border p-6 flex flex-col justify-between hover:shadow-2xl transition group' : 'bg-white shadow-md rounded-2xl border p-5 flex flex-row items-start gap-6 hover:shadow-lg transition group'}>
-              {/* Logo */}
-              <div className={view==='grid' ? 'w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center border mb-4' : 'w-16 h-16 rounded-xl bg-gray-50 flex items-center justify-center border flex-shrink-0'}>
-                {job.logo ? <img src={job.logo} alt={job.company} className="w-full h-full object-contain rounded" /> : <span className="font-bold text-gray-700">{job.company[0]}</span>}
-              </div>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col gap-6">
+          {/* Header */}
+          <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Job Listings</h1>
+              <p className="text-slate-500 text-sm mt-1">Showing {filteredJobs.length} opportunities</p>
+            </div>
 
-              {/* Info */}
-              <div className={view==='grid' ? 'flex-1' : 'flex-1 flex flex-col gap-1'}>
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600">{job.title}</h3>
-                <div className="flex items-center gap-2 text-gray-600 text-sm"><FaBuilding /> <span>{job.company}</span></div>
-                <p className={`text-gray-700 mt-2 ${view==='grid' ? 'line-clamp-3' : 'line-clamp-2'}`}>{job.description}</p>
-
-                {/* Details */}
-                <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                  <div className="flex items-center gap-1"><FaMapMarkerAlt className="text-gray-400" /> {job.location}</div>
-                  <div className="flex items-center gap-1"><FaMoneyBillWave className="text-green-600" /> {job.salary}</div>
-                  <div className="flex items-center gap-1"><FaLaptopCode className="text-gray-500" /> Skills:</div>
-                  <div className="flex flex-wrap gap-1">{job.skills.map((skill, idx)=><span key={idx} className="px-2 py-1 bg-blue-50 text-blue-700 rounded-lg">{skill}</span>)}</div>
-                </div>
-
-                {/* Employment & Posted */}
-                <div className="mt-2 flex flex-wrap gap-4 text-xs text-gray-400">
-                  <span>Type: {job.employmentType}</span>
-                  <span>Posted: {job.postedDate}</span>
-                  {job.remote && <span className="px-2 py-1 bg-indigo-50 text-indigo-600 rounded-lg">Remote</span>}
-                </div>
-              </div>
-
-              {/* Apply Button */}
-              <button onClick={()=> route.push(`Pages/Job/${job.id}`)} className={view==='grid' ? 'mt-4 w-full bg-blue-600 text-white py-2 rounded-xl hover:bg-blue-700 transition' : 'self-center flex-shrink-0 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition'}>
-                View Details
+            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl">
+              <button
+                onClick={() => setView("grid")}
+                className={`p-2 rounded-lg transition-all ${view === 'grid' ? 'bg-white dark:bg-slate-700 text-primary-600 shadow' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                aria-label="Grid View"
+              >
+                <HiSquares2X2 className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setView("list")}
+                className={`p-2 rounded-lg transition-all ${view === 'list' ? 'bg-white dark:bg-slate-700 text-primary-600 shadow' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                aria-label="List View"
+              >
+                <HiBars3 className="w-5 h-5" />
               </button>
             </div>
-          ))}
-        </motion.div>
+          </div>
 
-        {/* Pagination */}
-        <div className="w-full flex justify-center items-center py-6 gap-3">
-          <button onClick={()=>setCurrentPage(p=>Math.max(1,p-1))} className="px-4 py-2 bg-gray-200 rounded-xl hover:bg-gray-300">Prev</button>
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button key={i} onClick={()=>setCurrentPage(i+1)} className={`px-4 py-2 rounded-xl ${currentPage===i+1 ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}>{i+1}</button>
-          ))}
-          <button onClick={()=>setCurrentPage(p=>Math.min(totalPages,p+1))} className="px-4 py-2 bg-gray-200 rounded-xl hover:bg-gray-300">Next</button>
+          {/* Jobs List */}
+          {currentJobs.length === 0 ? (
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-slate-100 dark:border-slate-700">
+              <div className="w-20 h-20 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl">🤔</div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No jobs found</h3>
+              <p className="text-slate-500">Try adjusting your search criteria.</p>
+            </div>
+          ) : (
+            <motion.div
+              layout
+              className={view === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6' : 'flex flex-col gap-4'}
+            >
+              <AnimatePresence>
+                {currentJobs.map(job => (
+                  <JobCard key={job.id} job={job} variant={view} />
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          )}
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center mt-8 gap-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm"
+              >
+                Previous
+              </button>
+
+              <div className="hidden sm:flex gap-2">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-semibold transition ${currentPage === i + 1 ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'}`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition font-medium text-sm"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

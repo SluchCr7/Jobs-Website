@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import Header from "./Components/Header";
 import InteractiveFooter from "./Components/Footer";
+import { Providers } from "./providers";
+import { Toaster } from "sonner";
+import ScrollToTop from "./Components/ScrollToTop";
 
-export const metadata: Metadata = {
-  title: "JobFinder",
-  description: "JobFinder is a job search platform that helps you find your dream job.",
-};
-
-// 🟢 استيراد الخط الإنجليزي
-const jetBrainsMono = JetBrains_Mono({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400"],
-  style: ["normal", "italic"],
-  variable: "--font-english",
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
 });
 
 
@@ -24,13 +27,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`antialiased ${jetBrainsMono.className} bg-white text-gray-900 w-full`}
+        className={`antialiased ${inter.variable} ${poppins.variable} bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 w-full font-sans transition-colors duration-300`}
       >
-        <Header/>
-        {children}
-        <InteractiveFooter/>
+        <Providers>
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <InteractiveFooter />
+          <ScrollToTop />
+          <Toaster position="top-center" richColors />
+        </Providers>
       </body>
     </html>
   );

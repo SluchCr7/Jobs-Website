@@ -2,104 +2,144 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FiSearch, FiBell, FiMessageSquare, FiSun, FiMoon } from 'react-icons/fi';
+import { FiBell, FiSun, FiMoon } from 'react-icons/fi';
 import { HiMenu } from 'react-icons/hi';
 import MobileDrawer from './Drawer';
-import SearchBar from './SearchBar';
 import { links } from '@/app/utils/Data';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
+
 export default function Header() {
-  const route = useRouter()
+  const pathname = usePathname();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  // mounted state to avoid hydration mismatch
+  const [mounted, setMounted] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [dark, setDark] = useState<boolean>(false);
-  const [showHeader, setShowHeader] = useState(true);
-  const [lastScroll, setLastScroll] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const onScroll = () => {
-      const current = window.pageYOffset;
-      if (current <= 50) setShowHeader(true);
-      else if (current > lastScroll && current > 120) setShowHeader(false);
-      else setShowHeader(true);
-      setLastScroll(current);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [lastScroll]);
+  }, []);
 
-  useEffect(() => {
-    if (dark) document.documentElement.classList.add('dark');
-    else document.documentElement.classList.remove('dark');
-  }, [dark]);
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <>
-      <div className={`w-full transition-transform duration-300 z-50 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+          ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-lg border-b border-slate-200/50 dark:border-slate-700/50'
+          : 'bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800'
+          }`}
+      >
         {/* Upper utility bar */}
-        <div className="hidden lg:block bg-red-50 dark:bg-gray-800/70 backdrop-blur-sm border-b border-red-200/50 dark:border-gray-700/50">
-          <div className="max-w-7xl mx-auto px-5 py-2 flex items-center justify-between text-sm text-gray-700 dark:text-gray-300">
-            <div className="flex items-center gap-6">
-              <Link href="/Pages//Help" className="hover:text-red-600 font-medium transition">Help</Link>
-              <Link href="/Pages/Contact" className="hover:text-red-600 font-medium transition">Contact</Link>
-              <Link href="/Pages/Companies" className="hover:text-red-600 font-medium transition">Companies</Link>
+        <div className="hidden lg:block bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-xs py-1.5 transition-colors">
+          <div className="container-custom flex items-center justify-between text-slate-500 dark:text-slate-400">
+            <div className="flex items-center gap-4">
+              <Link href="/Pages/Help" className="hover:text-primary-600 transition">Help Center</Link>
+              <span>•</span>
+              <Link href="/Pages/Contact" className="hover:text-primary-600 transition">Contact</Link>
             </div>
-            <div className="flex items-center gap-6">
-              <Link href="/Pages/Saved" className="hover:text-red-600 font-medium transition">Saved Jobs</Link>
+            <div className="flex items-center gap-4">
               <button
-                aria-label="Toggle theme"
-                onClick={() => setDark(d => !d)}
-                className="p-2 rounded-md hover:bg-red-100 dark:hover:bg-white/10 transition"
+                onClick={toggleTheme}
+                className="flex items-center gap-2 hover:text-primary-600 transition focus:outline-none"
                 title="Toggle theme"
               >
-                {dark ? <FiSun className="text-yellow-400" /> : <FiMoon className="text-gray-700 dark:text-gray-200" />}
+                {mounted && resolvedTheme === 'dark' ? (
+                  <>
+                    <FiSun className="w-3.5 h-3.5 text-yellow-500" />
+                    <span>Light Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <FiMoon className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                    <span>Dark Mode</span>
+                  </>
+                )}
               </button>
-              <Link href="/Pages/Login" className="hover:text-red-600 font-semibold transition">Get Started</Link>
             </div>
           </div>
         </div>
-        {/* Header */}
-        <header className="sticky top-0 z-40 text-gray-900 border-b border-white/50 bg-gray-50 dark:bg-gray-900 dark:text-gray-100">
-          <div className="max-w-7xl mx-auto px-5 py-2">
-            <div className="flex items-center justify-between h-16">
-              <div className="flex items-center gap-6">
-                <Link href="/" className="flex items-center gap-2">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold">JF</div>
-                  <span className="hidden lg:flex font-semibold text-lg">JobFinder</span>
+
+        {/* Main Header */}
+        <header className="py-3">
+          <div className="container-custom">
+            <div className="flex items-center justify-between">
+              {/* Logo & Nav */}
+              <div className="flex items-center gap-8">
+                <Link href="/" className="flex items-center gap-2 group">
+                  <div className="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold text-xl shadow-lg shadow-primary-500/30 transition-transform group-hover:scale-105">
+                    JF
+                  </div>
+                  <span className="hidden lg:block font-heading font-bold text-xl text-slate-900 dark:text-white tracking-tight">JobFinder</span>
                 </Link>
 
-                <nav className="hidden md:flex items-center gap-4 text-sm">
-                  <Link href="/" className="hover:underline">Home</Link>
-                  <Link href="/Pages/Jobs" className="hover:underline">Jobs</Link>
-                  <Link href="/Pages/Companies" className="hover:underline">Companies</Link>
+                <nav className="hidden md:flex items-center gap-1">
+                  {links.map((link) => {
+                    const isActive = pathname === link.url;
+                    return (
+                      <Link
+                        key={link.id}
+                        href={link.url}
+                        className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive
+                            ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                            : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          }`}
+                      >
+                        {link.title}
+                        {isActive && (
+                          <span className="absolute inset-x-0 -bottom-3 mx-auto h-0.5 w-4 bg-primary-600 dark:bg-primary-400 rounded-full hidden md:block" />
+                        )}
+                      </Link>
+                    );
+                  })}
                 </nav>
               </div>
 
-              <div className="flex items-center gap-3">
-
-
-                <button aria-label="Notifications" className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition relative">
-                  <FiBell />
-                  <span className="absolute -top-1 -right-1 text-xs bg-red-500 text-white rounded-full px-1">3</span>
+              {/* Actions */}
+              <div className="flex items-center gap-4">
+                <button
+                  aria-label="Notifications"
+                  className="p-2 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition relative"
+                >
+                  <FiBell className="w-5 h-5" />
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-900"></span>
                 </button>
-                <button onClick={() => setDrawerOpen(true)} className="flex md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"><HiMenu/></button>
-                <div className="hidden sm:block">
-                  <Link href="/Pages/AddJob" className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold">Post a Job</Link>
+
+                <div className="hidden sm:flex items-center gap-3">
+                  <Link href="/Pages/Login" className="text-slate-600 dark:text-slate-300 font-medium hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 transition">
+                    Sign In
+                  </Link>
+                  <Link href="/Pages/AddJob" className="btn-primary text-sm px-5 py-2">
+                    Post a Job
+                  </Link>
                 </div>
 
-                <div className="ml-2">
-                  <button onClick={()=> route.push('/Pages/Profile')} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">A</button>
-                </div>
+                {/* Mobile Menu Button */}
+                <button
+                  onClick={() => setDrawerOpen(true)}
+                  className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+                >
+                  <HiMenu className="w-6 h-6" />
+                </button>
               </div>
             </div>
           </div>
         </header>
-
       </div>
+
+      {/* Spacer for fixed header */}
+      <div className="h-28 w-full"></div>
 
       {/* Mobile Drawer */}
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} links={links} />
     </>
   );
 }
-
-              

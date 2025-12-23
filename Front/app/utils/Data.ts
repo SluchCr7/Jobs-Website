@@ -1,6 +1,6 @@
 // Data.ts
 import { HiOutlineSparkles } from 'react-icons/hi';
-import { LinkItem, Job, JobCategory, Company, LatestJob, SocialLink,JobsData, UserProfileType, Article, Testimonial, category, State } from './Types';
+import { LinkItem, Job, JobCategory, Company, LatestJob, SocialLink, JobsData, UserProfileType, Article, Testimonial, category, State } from './Types';
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/fa';
 
 export const links: LinkItem[] = [
@@ -56,7 +56,7 @@ export const jobs: JobsData[] = [
     employmentType: "full_time",
     postedDate: "2024-12-01",
     hot: true,
-    logo: "/logos/google.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
   },
 
   {
@@ -72,7 +72,7 @@ export const jobs: JobsData[] = [
     categoryId: 2, // Design
     employmentType: "full_time",
     postedDate: "2024-12-03",
-    logo: "/logos/apple.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg",
   },
 
   {
@@ -88,7 +88,7 @@ export const jobs: JobsData[] = [
     categoryId: 3, // Backend
     employmentType: "full_time",
     postedDate: "2024-11-28",
-    logo: "/logos/meta.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/05/Meta_Platforms_Logo_2023.svg",
   },
 
   {
@@ -105,7 +105,7 @@ export const jobs: JobsData[] = [
     employmentType: "full_time",
     postedDate: "2024-12-05",
     urgent: true,
-    logo: "/logos/amazon.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
   },
 
   {
@@ -121,7 +121,7 @@ export const jobs: JobsData[] = [
     categoryId: 5, // Data
     employmentType: "full_time",
     postedDate: "2024-11-30",
-    logo: "/logos/microsoft.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
   },
 
   {
@@ -138,7 +138,7 @@ export const jobs: JobsData[] = [
     employmentType: "full_time",
     postedDate: "2024-12-02",
     hot: true,
-    logo: "/logos/netflix.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg",
   },
 
   {
@@ -155,7 +155,7 @@ export const jobs: JobsData[] = [
     employmentType: "internship",
     postedDate: "2024-12-04",
     urgent: true,
-    logo: "/logos/twitter.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Logo_of_Twitter.svg",
   },
 
   {
@@ -171,7 +171,7 @@ export const jobs: JobsData[] = [
     categoryId: 2, // Design
     employmentType: "part_time",
     postedDate: "2024-11-29",
-    logo: "/logos/adobe.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/d/d4/Adobe_Corporate_Logo.png",
   },
 
   {
@@ -188,7 +188,7 @@ export const jobs: JobsData[] = [
     employmentType: "full_time",
     postedDate: "2024-12-06",
     hot: true,
-  logo: "/logos/shopify.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg",
   },
 
   {
@@ -204,7 +204,7 @@ export const jobs: JobsData[] = [
     categoryId: 4, // Marketing
     employmentType: "part_time",
     postedDate: "2024-12-01",
-    logo: "/logos/hubspot.svg",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3f/HubSpot_Logo.svg",
   },
 ];
 
@@ -266,7 +266,7 @@ export const companies: Company[] = [
   }
 ];
 
-export const userProfile : UserProfileType = {
+export const userProfile: UserProfileType = {
   id: 1,
   fullName: "Ahmed Abobakr",
   avatarUrl: "", // ضع رابط الصورة الشخصية هنا أو اتركه فارغاً للـ Placeholder
@@ -333,7 +333,7 @@ export const userProfile : UserProfileType = {
 };
 
 
-export const categories : category[] = [
+export const categories: category[] = [
   { id: 1, name: "Engineering", count: 1240, icon: "⚙️" },
   { id: 2, name: "Design", count: 420, icon: "🎨" },
   { id: 3, name: "Product", count: 310, icon: "📦" },
@@ -342,10 +342,10 @@ export const categories : category[] = [
   { id: 6, name: "Operations", count: 150, icon: "🏗️" },
 ];
 
-export const testimonials : Testimonial[] = [
-  { id: 1,avatar: "", name: "Sara Ahmed", role: "Frontend Developer", quote: "I found my dream role in 2 weeks. The process was smooth and the listings were high quality." },
-  { id: 2,avatar: "", name: "Khaled Mostafa", role: "Product Manager", quote: "Great platform for both candidates and recruiters — excellent UX and fast responses." },
-  { id: 3,avatar: "", name: "Nora Ali", role: "Data Scientist", quote: "Love the search suggestions and the clear job cards — saved me a lot of time." },
+export const testimonials: Testimonial[] = [
+  { id: 1, avatar: "", name: "Sara Ahmed", role: "Frontend Developer", quote: "I found my dream role in 2 weeks. The process was smooth and the listings were high quality." },
+  { id: 2, avatar: "", name: "Khaled Mostafa", role: "Product Manager", quote: "Great platform for both candidates and recruiters — excellent UX and fast responses." },
+  { id: 3, avatar: "", name: "Nora Ali", role: "Data Scientist", quote: "Love the search suggestions and the clear job cards — saved me a lot of time." },
 ];
 export const articles: Article[] = [
   {
@@ -413,7 +413,7 @@ A well-crafted personal brand positions you as a solution provider rather than j
 ];
 
 
-export const stats : State[] = [
+export const stats: State[] = [
   { id: 1, label: "Available Jobs", value: "12,400+", icon: HiOutlineSparkles },
   { id: 2, label: "Trusted Companies", value: "4,200+", icon: HiOutlineSparkles },
   { id: 3, label: "Active Applicants", value: "150k+", icon: HiOutlineSparkles },
