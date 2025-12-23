@@ -64,6 +64,7 @@ export interface JobsData {
   /** UI flags */
   urgent?: boolean;
   hot?: boolean;
+  favorite?: boolean;
 
   /** meta */
   postedDate: string; // ISO date
@@ -175,35 +176,35 @@ export interface UserProfileType {
 
 
 export type Article = {
-  id : number ; 
-  title : string ;
-  excerpt : string; 
-  publishedDate? : string;
-  image? : string ;
-  content : string;
+  id: number;
+  title: string;
+  excerpt: string;
+  publishedDate?: string;
+  image?: string;
+  content: string;
   author: string;
   publishedAt: string;
   tags: string[]
 }
 
-export type Testimonial ={
-  id : number ; 
-  name : string; 
-  role : string;
-  quote : string;
+export type Testimonial = {
+  id: number;
+  name: string;
+  role: string;
+  quote: string;
   avatar?: string;
 
 }
 
 export type category = {
-  id : number;
+  id: number;
   count: number;
-  name : string;
+  name: string;
   icon: string;
 }
 export type State = {
   id: number;
   label: string;
   value: string;
-  icon : ComponentType
+  icon: ComponentType
 }

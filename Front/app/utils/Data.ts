@@ -56,6 +56,7 @@ export const jobs: JobsData[] = [
     employmentType: "full_time",
     postedDate: "2024-12-01",
     hot: true,
+    favorite: true,
     logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
   },
 
