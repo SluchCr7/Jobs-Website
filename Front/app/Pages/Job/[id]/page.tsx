@@ -14,7 +14,7 @@ import {
 import { MdWork } from "react-icons/md";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { jobs } from "@/app/utils/Data";
+import { jobs, categories } from "@/app/utils/Data";
 import ApplyJobModal from "@/app/Components/ApplyModel";
 import { JobsData } from "@/app/utils/Types";
 
@@ -40,6 +40,8 @@ export default function JobDetailPage() {
     selectedJob.description ||
     "This role is an exciting opportunity to join a dynamic team and make an impact. We are looking for passionate individuals who are ready to take on challenges and grow their careers.";
 
+  const categoryName = categories.find(c => c.id === selectedJob.categoryId)?.name || 'General';
+
   const qualifications = [
     "Bachelor's degree in a related field or equivalent practical experience",
     "3+ years of experience in a relevant role with a track record of success",
@@ -64,7 +66,7 @@ export default function JobDetailPage() {
             <FaArrowLeft /> Back to Jobs
           </button>
           <span className="text-sm text-slate-400 hidden sm:block">
-            Jobs / {selectedJob.category || 'General'} / {selectedJob.title}
+            Jobs / {selectedJob.title.split(' ')[0]} / {selectedJob.title}
           </span>
         </div>
 
