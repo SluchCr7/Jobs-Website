@@ -6,7 +6,8 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/f
 export const links: LinkItem[] = [
   { id: 1, title: "Find Job", url: "/Pages/Jobs" },
   { id: 2, title: "Pricing", url: "/Pages/Pricing" },
-  { id: 3, title: "Contact", url: "/Pages/Contact" },
+  { id: 3, title: "Companies", url: "/Pages/Companies" },
+  { id: 4, title: "Contact", url: "/Pages/Contact" },
 ];
 
 export const featuredJobs: Job[] = [
@@ -241,7 +242,7 @@ export const companies: Company[] = [
   {
     id: 4,
     name: "Meta",
-    logoUrl: "https://upload.wikimedia.org/wikipedia/commons/0/05/Meta_Platforms_Logo_2023.svg",
+    logoUrl: "https://logo.svgcdn.com/logos/meta.svg",
     location: "Menlo Park, USA",
     website: "https://www.metacareers.com",
     description: "Building social platforms, VR/AR, and future-facing experiences.",
