@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import { articles } from "@/app/utils/Data";
 import { useRouter } from "next/navigation";
