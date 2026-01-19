@@ -33,7 +33,10 @@ const CompanyDetailPage = () => {
 
   const companyJobs = useMemo(() => {
     if (!company) return [];
-    return jobs.filter(j => j.company.toLowerCase() === company.name.toLowerCase());
+    return jobs.filter(j => {
+      const jobCompanyName = typeof j.company === 'string' ? j.company : j.company.name;
+      return jobCompanyName.toLowerCase() === company.name.toLowerCase();
+    });
   }, [company]);
 
   if (!company) {
@@ -166,8 +169,8 @@ const CompanyDetailPage = () => {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`pb-4 text-sm font-bold transition-all relative whitespace-nowrap ${activeTab === tab.id
-                      ? 'text-primary-600'
-                      : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                    ? 'text-primary-600'
+                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                     }`}
                 >
                   {tab.label}
