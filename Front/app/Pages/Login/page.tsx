@@ -6,14 +6,17 @@ import { FaEnvelope, FaLock } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { FaLinkedin } from "react-icons/fa";
 
+import { useAuth } from "@/app/Context/AuthContext";
+
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { login, loading } = useAuth(); // hook
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log({ email, password });
+    await login({ email, password });
   };
 
   return (
@@ -96,9 +99,10 @@ const LoginPage = () => {
 
             <button
               type="submit"
-              className="w-full btn-primary py-4 text-lg shadow-xl shadow-primary-500/30"
+              disabled={loading}
+              className="w-full btn-primary py-4 text-lg shadow-xl shadow-primary-500/30 disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
             </button>
           </form>
 

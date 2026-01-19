@@ -1,12 +1,26 @@
-'use client';
-
+'use client'
 import React, { useState } from "react";
+import { useJobs } from "@/app/Context/JobContext";
+import { useCompanies } from "@/app/Context/CompanyContext";
+import { categories } from "@/app/utils/Data";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import { JobsData } from "@/app/utils/Types";
-import { FiArrowRight, FiArrowLeft, FiCheck, FiBriefcase, FiMapPin, FiDollarSign, FiLayers, FiCalendar, FiGlobe } from "react-icons/fi";
+import {
+  FiBriefcase,
+  FiMapPin,
+  FiDollarSign,
+  FiLayers,
+  FiCalendar,
+  FiGlobe,
+  FiCheck,
+  FiArrowLeft,
+  FiArrowRight
+} from "react-icons/fi";
 
 const initialJob: Partial<JobsData> = {
   title: "",
-  company: "",
+  company: "", // Will hold ID
   description: "",
   location: "",
   remote: false,
@@ -24,6 +38,14 @@ export default function AddJobPage() {
   const [step, setStep] = useState(1);
   const [job, setJob] = useState<Partial<JobsData>>(initialJob);
   const [skillInput, setSkillInput] = useState("");
+  const { createJob, loading } = useJobs();
+  const { companies, fetchCompanies } = useCompanies();
+  const router = useRouter();
+
+  // Load companies on mount
+  React.useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 4));
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
@@ -43,11 +65,49 @@ export default function AddJobPage() {
     setJob({ ...job, skills: job.skills?.filter((s: string) => s !== skill) });
   };
 
-  const handleSubmit = () => {
-    console.log("Job Submitted:", job);
-    alert("Job submitted successfully!");
-    setStep(1);
-    setJob(initialJob);
+  const handleSubmit = async () => {
+    try {
+      // Transform data
+      const categoryName = categories.find(c => c.id === job.categoryId)?.name || "General";
+      const jobType = job.employmentType?.replace("_", "-") || "full-time";
+
+      // Parse salary (Basic logic: extract numbers)
+      // e.g. "80k - 120k" -> 80000, 120000
+      const salaryNumbers = job.salary?.match(/\d+/g)?.map(n => parseInt(n));
+      let min = 0, max = 0;
+      if (salaryNumbers && salaryNumbers.length > 0) {
+        // Check if 'k' is involved or just raw numbers. 
+        // Simple approach: if < 1000 assume k. (Risky). 
+        // Better: just check the string content? 
+        // Allow user to enter raw string but we need to send object to backend.
+        // Backend Schema: salary: { min, max, currency }.
+        // We will do best effort or send 0.
+        min = salaryNumbers[0] * (job.salary?.toLowerCase().includes('k') ? 1000 : 1);
+        if (salaryNumbers.length > 1) max = salaryNumbers[1] * (job.salary?.toLowerCase().includes('k') ? 1000 : 1);
+      }
+
+      const payload = {
+        title: job.title,
+        description: job.description,
+        company: job.company, // Must be ID
+        location: job.location,
+        jobType,
+        category: categoryName,
+        requirements: job.skills, // Map skills to requirements
+        responsibilities: [],
+        salary: { min, max, currency: "USD" },
+        // logo is not in schema directly (it's on company), but maybe we ignore it or manage via another way
+        level: "mid", // Default
+        status: "open"
+      };
+
+      await createJob(payload);
+      setStep(1);
+      setJob(initialJob);
+      router.push("/Pages/Jobs");
+    } catch (e) {
+      // Handled by context toast
+    }
   };
 
   return (
@@ -104,14 +164,17 @@ export default function AddJobPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Company Name</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Acme Corp"
-                    value={job.company}
+                  <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Company</label>
+                  <select
+                    value={typeof job.company === 'string' ? job.company : ''}
                     onChange={(e) => handleChange("company", e.target.value)}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all dark:text-white placeholder:text-slate-400"
-                  />
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all dark:text-white"
+                  >
+                    <option value="">Select Company</option>
+                    {companies.map(c => (
+                      <option key={c.id || c._id} value={c._id || c.id}>{c.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Description</label>
@@ -338,9 +401,10 @@ export default function AddJobPage() {
             ) : (
               <button
                 onClick={handleSubmit}
-                className="bg-green-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center gap-2 shadow-lg shadow-green-500/30 text-lg hover:-translate-y-1"
+                disabled={loading}
+                className="bg-green-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-700 transition flex items-center gap-2 shadow-lg shadow-green-500/30 text-lg hover:-translate-y-1 disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Publish Job <FiCheck />
+                {loading ? "Publishing..." : "Publish Job"} <FiCheck />
               </button>
             )}
           </div>

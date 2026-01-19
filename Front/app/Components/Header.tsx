@@ -2,17 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { FiBell, FiSun, FiMoon } from 'react-icons/fi';
+import { FiBell, FiSun, FiMoon, FiLogOut, FiUser } from 'react-icons/fi';
 import { HiMenu } from 'react-icons/hi';
 import MobileDrawer from './Drawer';
 import { links } from '@/app/utils/Data';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { useAuth } from '../Context/AuthContext';
 
 export default function Header() {
   const pathname = usePathname();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  // mounted state to avoid hydration mismatch
+  const { user, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -89,8 +90,8 @@ export default function Header() {
                         key={link.id}
                         href={link.url}
                         className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${isActive
-                            ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
-                            : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                          : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                           }`}
                       >
                         {link.title}
@@ -114,12 +115,30 @@ export default function Header() {
                 </button>
 
                 <div className="hidden sm:flex items-center gap-3">
-                  <Link href="/Pages/Login" className="text-slate-600 dark:text-slate-300 font-medium hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 transition">
-                    Sign In
-                  </Link>
-                  <Link href="/Pages/AddJob" className="btn-primary text-sm px-5 py-2">
-                    Post a Job
-                  </Link>
+                  {user ? (
+                    <div className="flex items-center gap-3">
+                      <Link href="/Pages/Profile" className="flex items-center gap-2 px-3 py-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                        {user.avatar?.url ? (
+                          <img src={user.avatar.url} alt={user.name} className="w-6 h-6 rounded-full object-cover" />
+                        ) : (
+                          <FiUser className="w-5 h-5" />
+                        )}
+                        <span className="text-sm font-semibold max-w-[100px] truncate">{user.name}</span>
+                      </Link>
+                      <button onClick={logout} className="p-2 text-slate-500 hover:text-red-500 transition" title="Logout">
+                        <FiLogOut className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Link href="/Pages/Login" className="text-slate-600 dark:text-slate-300 font-medium hover:text-primary-600 dark:hover:text-primary-400 px-3 py-2 transition">
+                        Sign In
+                      </Link>
+                      <Link href="/Pages/AddJob" className="btn-primary text-sm px-5 py-2">
+                        Post a Job
+                      </Link>
+                    </>
+                  )}
                 </div>
 
                 {/* Mobile Menu Button */}

@@ -11,6 +11,12 @@ interface JobCardProps {
 
 export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
     const isList = variant === 'list';
+    const companyName = typeof job.company === 'string' ? job.company : job.company?.name || 'Unknown Company';
+    // Backend returns company with logo Object { url: ... }, Mock returns logoUrl or logo string
+    const companyLogo = typeof job.company === 'object' && job.company?.logo?.url
+        ? job.company.logo.url
+        : (job.logo || (typeof job.company === 'object' ? job.company.logoUrl : '') || '');
+    const jobId = job._id || job.id;
 
     return (
         <motion.article
@@ -23,18 +29,18 @@ export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
             <div className={`flex ${isList ? 'flex-col sm:flex-row gap-4 flex-1' : 'flex-col gap-4'}`}>
                 <div className="flex items-start justify-between w-full">
                     <div className="flex items-center gap-4">
-                        <div className={`${isList ? 'w-16 h-16' : 'w-14 h-14'} shrink-0 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 dark:bg-slate-700 dark:border-slate-600`}>
-                            {job.logo ? (
-                                <img src={job.logo} alt={job.company} className="w-8 h-8 object-contain" />
+                        <div className={`${isList ? 'w-16 h-16' : 'w-14 h-14'} shrink-0 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 dark:bg-slate-700 dark:border-slate-600 overflow-hidden`}>
+                            {companyLogo ? (
+                                <img src={companyLogo} alt={companyName} className="w-full h-full object-contain p-2" />
                             ) : (
-                                <span className="font-bold text-xl text-primary-600">{job.company?.[0] || 'C'}</span>
+                                <span className="font-bold text-xl text-primary-600">{companyName?.[0] || 'C'}</span>
                             )}
                         </div>
                         <div>
                             <h3 className="font-heading font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors line-clamp-1">
                                 {job.title}
                             </h3>
-                            <p className="text-sm text-slate-500 font-medium dark:text-slate-400">{job.company}</p>
+                            <p className="text-sm text-slate-500 font-medium dark:text-slate-400">{companyName}</p>
                         </div>
                     </div>
 
@@ -72,7 +78,7 @@ export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
             </div>
 
             <div className={`${isList ? 'mt-4 sm:mt-0 sm:ml-auto w-full sm:w-auto flex sm:flex-col justify-center' : 'mt-auto'} flex items-center gap-3`}>
-                <Link href={`/Pages/Job/${job.id}`} className="flex-1 btn-outline text-center text-sm py-2 px-4 whitespace-nowrap">
+                <Link href={`/Pages/Job/${jobId}`} className="flex-1 btn-outline text-center text-sm py-2 px-4 whitespace-nowrap">
                     Details
                 </Link>
                 <button className="flex-1 btn-primary text-sm py-2 px-4 whitespace-nowrap">

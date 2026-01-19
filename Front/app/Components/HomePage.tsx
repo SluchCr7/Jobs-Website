@@ -6,9 +6,11 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiOutlineSearch, HiOutlineLocationMarker } from "react-icons/hi";
 import { FiBriefcase, FiTrendingUp, FiUsers, FiAward, FiMail } from "react-icons/fi";
-import { companies, jobs, articles, categories, testimonials, stats } from "../utils/Data";
+import { articles, categories, testimonials, stats } from "../utils/Data";
 import { JobsData } from "../utils/Types";
 import JobCard from "./JobCard";
+import { useJobs } from "../Context/JobContext";
+import { useCompanies } from "../Context/CompanyContext";
 
 /* ---------------------- Helper Components ---------------------- */
 const Container: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -26,30 +28,35 @@ export default function HomePage(): JSX.Element {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [remoteOnly, setRemoteOnly] = useState(false);
   const [jobType, setJobType] = useState<"any" | "fulltime" | "parttime" | "contract">("any");
-  const [loading, setLoading] = useState<boolean>(true);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [email, setEmail] = useState("");
 
-  // simulate data loading (for skeletons)
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 700);
-    return () => clearTimeout(t);
-  }, []);
+  const { jobs, loading } = useJobs();
+  const { companies } = useCompanies();
 
   // derived filtered jobs (simple client-side)
   const filteredJobs = useMemo(() => {
     const q = query.trim().toLowerCase();
     return jobs.filter(j => {
-      if (remoteOnly && !j.remote) return false;
-      if (selectedCategory && j.categoryId !== selectedCategory) return false;
-      if (jobType !== "any" && j.employmentType?.toLowerCase() !== jobType) return false;
-      if (location && !j.location.toLowerCase().includes(location.toLowerCase())) return false;
+      if (remoteOnly && !j.remote && j.location?.toLowerCase() !== 'remote') return false;
+      // Note: Backend might use category ID or Name. Check if categoryId exists or category field.
+      // Mock uses categoryId (number), Backend might use category (string).
+      // We will skip strict category filtering if types mismatch for now or try both.
+      if (selectedCategory && j.categoryId !== selectedCategory && j.category !== selectedCategory) return false;
+
+      if (jobType !== "any" && j.employmentType?.toLowerCase() !== jobType && j.jobType?.toLowerCase() !== jobType) return false;
+
+      if (location && !j.location?.toLowerCase().includes(location.toLowerCase())) return false;
       if (!q) return true;
+
+      const companyName = typeof j.company === 'string' ? j.company : j.company?.name || '';
+      const skillsStr = Array.isArray(j.skills) ? j.skills.join(" ") : (j.skills || "");
+
       return (
-        j.title.toLowerCase().includes(q) ||
-        j.company.toLowerCase().includes(q) ||
-        j.skills.join(" ").toLowerCase().includes(q)
+        j.title?.toLowerCase().includes(q) ||
+        companyName.toLowerCase().includes(q) ||
+        skillsStr.toLowerCase().includes(q)
       );
     });
   }, [jobs, query, location, selectedCategory, remoteOnly, jobType]);
@@ -59,13 +66,15 @@ export default function HomePage(): JSX.Element {
     if (!query) return [];
     const q = query.toLowerCase();
     const titles = Array.from(new Set(jobs.map(j => j.title)))
-      .filter(t => t.toLowerCase().includes(q))
+      .filter(t => t?.toLowerCase().includes(q))
       .slice(0, 5);
-    const skills = Array.from(new Set(jobs.flatMap(j => j.skills)))
+
+    const allSkills = jobs.flatMap(j => Array.isArray(j.skills) ? j.skills : []);
+    const skills = Array.from(new Set(allSkills))
       .filter(s => s.toLowerCase().includes(q))
       .slice(0, 5);
     return [...titles, ...skills].slice(0, 6);
-  }, [query]);
+  }, [query, jobs]);
 
   // subscribe handler
   const handleSubscribe = (e: React.FormEvent) => {
@@ -273,7 +282,7 @@ export default function HomePage(): JSX.Element {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-sm font-semibold text-slate-400">{filteredJobs.length} Jobs Found</span>
-              <Link href="/jobs" className="text-primary-600 font-semibold hover:underline">View All &rarr;</Link>
+              <Link href="/Pages/Jobs" className="text-primary-600 font-semibold hover:underline">View All &rarr;</Link>
             </div>
           </div>
 

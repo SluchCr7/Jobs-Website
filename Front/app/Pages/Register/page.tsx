@@ -14,11 +14,17 @@ interface RegisterData {
   password: string;
 }
 
+import { useAuth } from "@/app/Context/AuthContext";
+import { toast } from "sonner";
+
+// ... existing code ...
+
 const steps = ["Account Type", "Basic Info", "Security", "Review"];
 
 export default function RegisterPage() {
   const [step, setStep] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
+  const { register } = useAuth();
 
   const [form, setForm] = useState<RegisterData>({
     username: "",
@@ -29,9 +35,18 @@ export default function RegisterPage() {
   const next = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
-  const handleSignup = () => {
-    console.log("REGISTER PAYLOAD", form);
-    // API CALL HERE
+  const handleSignup = async () => {
+    try {
+      await register({
+        name: form.username,
+        email: form.email,
+        password: form.password,
+        role: form.role === 'employer' ? 'employer' : 'user'
+      });
+      // Redirect handled in context
+    } catch (e) {
+      // Handled in context
+    }
   };
 
   return (

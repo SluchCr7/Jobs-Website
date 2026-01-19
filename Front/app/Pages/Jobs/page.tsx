@@ -1,15 +1,22 @@
 'use client';
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Filters from "@/app/Components/Filters";
-import { jobs } from "@/app/utils/Data";
 import { JobsData, FiltersType } from "@/app/utils/Types";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiSquares2X2, HiBars3 } from "react-icons/hi2";
 import JobCard from "@/app/Components/JobCard";
 import { useRouter } from "next/navigation";
+import { useJobs } from "@/app/Context/JobContext";
 
 export default function JobsPage() {
   const router = useRouter()
+  const { jobs, loading, fetchJobs } = useJobs();
+
+  // Refresh jobs on mount to ensure up-to-date
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
+
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [filters, setFilters] = useState<FiltersType>({
     keyword: "",
@@ -23,22 +30,29 @@ export default function JobsPage() {
   const jobsPerPage = 6;
 
   const filteredJobs = useMemo(() => {
-    return jobs.filter((job: JobsData) => {
+    return jobs.filter((job: any) => { // Use 'any' or flexible type
+      // Safe access
+      const jobTitle = job.title || "";
+      const jobSkills = Array.isArray(job.skills) ? job.skills : [];
+      const jobLocation = job.location || "";
+      const jobRemote = job.remote === true || jobLocation.toLowerCase() === 'remote';
+      const jobEmployment = job.employmentType || job.jobType || "";
+
       const matchKeyword =
-        job.title.toLowerCase().includes(filters.keyword.toLowerCase()) ||
-        job.skills.some((s) => s.toLowerCase().includes(filters.keyword.toLowerCase()));
+        jobTitle.toLowerCase().includes(filters.keyword.toLowerCase()) ||
+        jobSkills.some((s: string) => s.toLowerCase().includes(filters.keyword.toLowerCase()));
       const matchLocation = filters.location
-        ? job.location.toLowerCase().includes(filters.location.toLowerCase())
+        ? jobLocation.toLowerCase().includes(filters.location.toLowerCase())
         : true;
-      const matchRemote = filters.remote ? job.remote === true : true;
+      const matchRemote = filters.remote ? jobRemote : true;
       const matchEmployment =
-        filters.employment.length > 0 ? filters.employment.includes(job.employmentType) : true;
+        filters.employment.length > 0 ? filters.employment.some(t => jobEmployment.toLowerCase().includes(t.toLowerCase().replace('_', '-'))) : true;
       const matchSkills =
-        filters.skills.length > 0 ? filters.skills.every((s) => job.skills.includes(s)) : true;
+        filters.skills.length > 0 ? filters.skills.every((s) => jobSkills.includes(s)) : true;
 
       return matchKeyword && matchLocation && matchRemote && matchEmployment && matchSkills;
     });
-  }, [filters]);
+  }, [filters, jobs]);
 
   const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
   const indexOfLast = currentPage * jobsPerPage;

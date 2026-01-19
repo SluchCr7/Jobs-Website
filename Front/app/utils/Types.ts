@@ -47,8 +47,9 @@ export type EmploymentType =
 
 export interface JobsData {
   id: number;
+  _id?: string;
   title: string;
-  company: string;
+  company: string | { name: string; logo?: { url: string }; logoUrl?: string };
   description: string;
 
   location: string;
