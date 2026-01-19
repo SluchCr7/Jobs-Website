@@ -78,7 +78,17 @@ export default function JobDetailPage() {
         >
           <div className="flex flex-col md:flex-row gap-8 items-start">
             <div className="w-24 h-24 rounded-2xl bg-white dark:bg-slate-700 shadow-md flex items-center justify-center p-4 border border-slate-100 dark:border-slate-600 shrink-0">
-              {selectedJob.logo ? <img src={selectedJob.logo} alt={selectedJob.company} className="w-full h-full object-contain" /> : <span className="text-3xl font-bold text-gray-400">{selectedJob.company[0]}</span>}
+              {selectedJob.logo ? (
+                <img
+                  src={typeof selectedJob.logo === 'string' ? selectedJob.logo : selectedJob.logo?.url}
+                  alt={typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company.name}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <span className="text-3xl font-bold text-gray-400">
+                  {(typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company.name)[0]}
+                </span>
+              )}
             </div>
 
             <div className="flex-1">
@@ -89,7 +99,7 @@ export default function JobDetailPage() {
               <div className="flex flex-wrap items-center gap-4 text-sm md:text-base text-slate-600 dark:text-slate-300">
                 <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
                   <FaBuilding className="text-primary-500" />
-                  <span className="font-semibold">{selectedJob.company}</span>
+                  <span className="font-semibold">{typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company.name}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
                   <FaMapMarkerAlt className="text-primary-500" />
@@ -207,7 +217,7 @@ export default function JobDetailPage() {
               <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-4">
                 <FaBuilding className="text-2xl" />
               </div>
-              <h3 className="font-bold text-lg mb-2">About {selectedJob.company}</h3>
+              <h3 className="font-bold text-lg mb-2">About {typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company.name}</h3>
               <p className="text-slate-300 text-sm mb-4">We are a leading tech company building the future of work. Join our mission.</p>
               <Link href="#" className="text-primary-300 hover:text-white font-medium text-sm transition flex items-center gap-2">
                 Visit Website <FaArrowLeft className="rotate-180" />
