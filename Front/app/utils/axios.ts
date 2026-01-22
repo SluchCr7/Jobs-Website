@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api', // Updated to match new server port
+  baseURL: process.env.NEXT_PUBLIC_BACK_URL
+    ? `${process.env.NEXT_PUBLIC_BACK_URL}/api`
+    : 'http://localhost:5000/api',
 });
 
 // Add a request interceptor to include the token
