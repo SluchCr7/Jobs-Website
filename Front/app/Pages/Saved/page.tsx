@@ -14,10 +14,13 @@ export default function SavedJobsPage() {
     setSavedJobs(prev => prev.filter(job => job.id !== id));
   };
 
-  const filteredJobs = savedJobs.filter(job =>
-    job.title.toLowerCase().includes(search.toLowerCase()) ||
-    job.company.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredJobs = savedJobs.filter(job => {
+    const companyName = typeof job.company === 'string' ? job.company : job.company.name;
+    return (
+      job.title.toLowerCase().includes(search.toLowerCase()) ||
+      companyName.toLowerCase().includes(search.toLowerCase())
+    );
+  });
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors pt-24 pb-12 font-sans">
@@ -75,71 +78,78 @@ export default function SavedJobsPage() {
             </div>
           )}
 
-          {filteredJobs.map((job, idx) => (
-            <div
-              key={job.id}
-              className="relative bg-white dark:bg-slate-800 rounded-2xl p-6 flex flex-col md:flex-row justify-between gap-6 shadow-sm hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-300 group animate-slide-up"
-              style={{ animationDelay: `${idx * 0.05}s` }}
-            >
-              <div className="absolute top-4 right-4">
-                <button
-                  onClick={() => removeJob(job.id)}
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors tooltip"
-                  title="Remove from Saved"
-                >
-                  <FaHeart size={18} />
-                </button>
-              </div>
+          {filteredJobs.map((job, idx) => {
+            const companyName = typeof job.company === 'string' ? job.company : job.company.name;
+            const logoUrl = typeof job.logo === 'string'
+              ? job.logo
+              : (typeof job.company !== 'string' ? job.company.logo?.url || job.company.logoUrl : undefined);
 
-              {/* Left section */}
-              <div className="flex gap-5">
-                {/* Logo */}
-                <div className="w-16 h-16 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 font-bold text-xl shrink-0">
-                  {job.logo ? <img src={job.logo} alt={job.company} className="w-10 h-10 object-contain" /> : job.company.charAt(0)}
+            return (
+              <div
+                key={job.id}
+                className="relative bg-white dark:bg-slate-800 rounded-2xl p-6 flex flex-col md:flex-row justify-between gap-6 shadow-sm hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-300 group animate-slide-up"
+                style={{ animationDelay: `${idx * 0.05}s` }}
+              >
+                <div className="absolute top-4 right-4">
+                  <button
+                    onClick={() => removeJob(job.id)}
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors tooltip"
+                    title="Remove from Saved"
+                  >
+                    <FaHeart size={18} />
+                  </button>
                 </div>
 
-                <div>
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">
-                    {job.title}
-                  </h2>
-                  <p className="text-slate-600 dark:text-slate-400 font-medium">
-                    {job.company}
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-slate-500 dark:text-slate-400">
-                    <span className="flex items-center gap-1"><FaMapMarkerAlt className="text-primary-500" /> {job.location}</span>
-                    <span className="flex items-center gap-1"><FaMoneyBillWave className="text-green-500" /> {job.salary}</span>
-                    <span className={`px-2 py-0.5 rounded text-xs font-semibold ${job.remote ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"}`}>
-                      {job.remote ? "Remote" : "On-site"}
-                    </span>
+                {/* Left section */}
+                <div className="flex gap-5">
+                  {/* Logo */}
+                  <div className="w-16 h-16 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 font-bold text-xl shrink-0">
+                    {logoUrl ? <img src={logoUrl} alt={companyName} className="w-10 h-10 object-contain" /> : companyName.charAt(0)}
                   </div>
 
-                  {/* Skills */}
-                  <div className="flex flex-wrap gap-2 mt-4">
-                    {job.skills.slice(0, 4).map(skill => (
-                      <span
-                        key={skill}
-                        className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium"
-                      >
-                        {skill}
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">
+                      {job.title}
+                    </h2>
+                    <p className="text-slate-600 dark:text-slate-400 font-medium">
+                      {companyName}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-slate-500 dark:text-slate-400">
+                      <span className="flex items-center gap-1"><FaMapMarkerAlt className="text-primary-500" /> {job.location}</span>
+                      <span className="flex items-center gap-1"><FaMoneyBillWave className="text-green-500" /> {job.salary}</span>
+                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${job.remote ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"}`}>
+                        {job.remote ? "Remote" : "On-site"}
                       </span>
-                    ))}
+                    </div>
+
+                    {/* Skills */}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      {job.skills.slice(0, 4).map(skill => (
+                        <span
+                          key={skill}
+                          className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Right buttons */}
-              <div className="flex flex-row md:flex-col justify-end gap-3 mt-4 md:mt-0 w-full md:w-auto">
-                <Link href={`/Pages/Job/${job.id}`} className="px-6 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium text-center whitespace-nowrap">
-                  View Details
-                </Link>
+                {/* Right buttons */}
+                <div className="flex flex-row md:flex-col justify-end gap-3 mt-4 md:mt-0 w-full md:w-auto">
+                  <Link href={`/Pages/Job/${job.id}`} className="px-6 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium text-center whitespace-nowrap">
+                    View Details
+                  </Link>
 
-                <button className="btn-primary w-full md:w-auto px-6 py-2.5 whitespace-nowrap">
-                  Apply Now
-                </button>
+                  <button className="btn-primary w-full md:w-auto px-6 py-2.5 whitespace-nowrap">
+                    Apply Now
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

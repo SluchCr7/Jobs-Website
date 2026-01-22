@@ -17,13 +17,23 @@ interface AppliedJob {
 }
 
 const appliedJobs: AppliedJob[] = jobs.map((job, idx) => {
-  const logo = job.logo ?? "/placeholder.png";
+  const companyName = typeof job.company === 'string' ? job.company : job.company.name;
+
+  let logo = "/placeholder.png";
+  if (job.logo) {
+    logo = job.logo;
+  } else if (typeof job.company !== 'string' && job.company.logo?.url) {
+    logo = job.company.logo.url;
+  } else if (typeof job.company !== 'string' && job.company.logoUrl) {
+    logo = job.company.logoUrl;
+  }
+
   const employmentType = job.employmentType ?? "full_time";
 
   return {
     id: job.id,
     title: job.title,
-    company: job.company,
+    company: companyName,
     companyLogo: logo,
     appliedDate: "2025-12-09",
     employmentType,
@@ -100,8 +110,8 @@ export default function MyApplicationsPage() {
                 key={tab}
                 onClick={() => setFilter(tab as any)}
                 className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${filter === tab
-                    ? "bg-primary-600 text-white shadow-lg shadow-primary-500/30"
-                    : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600"
+                  ? "bg-primary-600 text-white shadow-lg shadow-primary-500/30"
+                  : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600"
                   }`}
               >
                 {tab}

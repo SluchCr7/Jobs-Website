@@ -2,18 +2,12 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
-
-interface Job {
-  title: string;
-  company: string;
-  location: string;
-  remote: boolean;
-}
+import { JobsData } from "../utils/Types";
 
 interface ApplyJobModalProps {
   open: boolean;
   onClose: () => void;
-  job: Job;
+  job: JobsData;
 }
 
 export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps) {
@@ -57,9 +51,8 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
               {Array.from({ length: stepsCount }).map((_, idx) => (
                 <div
                   key={idx}
-                  className={`h-2 flex-1 mx-1 rounded-full ${
-                    step > idx ? "bg-blue-600" : "bg-gray-300"
-                  }`}
+                  className={`h-2 flex-1 mx-1 rounded-full ${step > idx ? "bg-blue-600" : "bg-gray-300"
+                    }`}
                 ></div>
               ))}
             </div>
@@ -74,7 +67,7 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
                   You are about to apply for this position. Please confirm to proceed.
                 </p>
                 <div className="bg-gray-50 p-4 rounded-xl mt-5 border">
-                  <p><strong>Company:</strong> {job.company}</p>
+                  <p><strong>Company:</strong> {typeof job.company === 'string' ? job.company : job.company.name}</p>
                   <p><strong>Location:</strong> {job.location}</p>
                   <p><strong>Work Mode:</strong> {job.remote ? "Remote" : "On-site"}</p>
                 </div>
