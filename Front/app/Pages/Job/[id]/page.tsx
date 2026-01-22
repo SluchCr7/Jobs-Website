@@ -78,9 +78,13 @@ export default function JobDetailPage() {
         >
           <div className="flex flex-col md:flex-row gap-8 items-start">
             <div className="w-24 h-24 rounded-2xl bg-white dark:bg-slate-700 shadow-md flex items-center justify-center p-4 border border-slate-100 dark:border-slate-600 shrink-0">
-              {selectedJob.logo ? (
+              {(selectedJob.logo || (typeof selectedJob.company !== 'string' && selectedJob.company.logo)) ? (
                 <img
-                  src={typeof selectedJob.logo === 'string' ? selectedJob.logo : selectedJob.logo?.url}
+                  src={
+                    typeof selectedJob.logo === 'string'
+                      ? selectedJob.logo
+                      : (typeof selectedJob.company !== 'string' ? selectedJob.company.logo?.url : undefined)
+                  }
                   alt={typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company.name}
                   className="w-full h-full object-contain"
                 />
