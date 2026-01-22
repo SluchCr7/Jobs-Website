@@ -19,6 +19,8 @@ export interface User {
     resume?: string;
     company?: any; // Company object or ID
     isVerified: boolean;
+    createdAt?: string;
+    updatedAt?: string;
     token?: string; // Token is appended on login
 }
 
