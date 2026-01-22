@@ -1,8 +1,9 @@
-const express = require("express")
 require("dotenv").config()
+const express = require("express")
 const connectDB = require('./config/db')
 const { errorhandler } = require("./Middelwares/errorHandler")
 const app = express()
+const path = require("path")
 const cors = require("cors")
 const helmet = require("helmet")
 // DB 
