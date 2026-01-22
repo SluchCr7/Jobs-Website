@@ -11,7 +11,7 @@ const {
 
 const {
     protect, admin, sameUser, adminOrSameUser
-} = require("../Middlewares/verifyToken");
+} = require("../Middelwares/verifyToken");
 
 // Public
 router.get("/", getAllJobs);

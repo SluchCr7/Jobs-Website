@@ -9,7 +9,7 @@ const {
 const route = require("express").Router();
 const {
     protect, admin, sameUser, adminOrSameUser
-} = require("../Middlewares/verifyToken");
+} = require("../Middelwares/verifyToken");
 
 route.route("/apply")
     .post(protect,applyToJob)

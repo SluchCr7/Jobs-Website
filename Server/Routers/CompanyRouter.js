@@ -11,7 +11,7 @@ const express = require("express");
 const router = express.Router();
 
 const photoUpload = require("../Middelwares/UploadPhoto");
-const { protect } = require("../Middlewares/verifyToken");
+const { protect } = require("../Middelwares/verifyToken");
 
 // ✅ Create company + upload logo
 router.post(
