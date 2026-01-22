@@ -1,15 +1,40 @@
 const asyncHandler = require("express-async-handler");
-const { Company } = require("../Modules/Company");
+const { Company, validateCompany } = require("../Modules/Company");
 const { User } = require("../Modules/User");
-const {cloudUpload, cloudRemove} = require("../config/cloudUpload");
+const { cloudUpload, cloudRemove } = require("../config/cloudUpload");
+
 /**
  * @desc    Create new company
- * @route   POST /api/companies
- * @access  Private (Employer)
+ * @route   POST /api/company
+ * @access  Private (Employer only)
  */
-
-
 const createCompany = asyncHandler(async (req, res) => {
+  // 1. Validate role
+  if (req.user.role !== "employer" && req.user.role !== "admin") {
+    return res.status(403).json({
+      message: "Only employers can create companies"
+    });
+  }
+
+  // 2. Check if user already has a company
+  if (req.user.company) {
+    return res.status(400).json({
+      message: "You already belong to a company"
+    });
+  }
+
+  // 3. Check if user already owns a company
+  const existingCompany = await Company.findOne({ owner: req.user._id });
+  if (existingCompany) {
+    return res.status(400).json({ message: "You already own a company" });
+  }
+
+  // 4. Validate input
+  const { error } = validateCompany(req.body);
+  if (error) {
+    return res.status(400).json({ message: error.details[0].message });
+  }
+
   const {
     name,
     description,
@@ -20,23 +45,14 @@ const createCompany = asyncHandler(async (req, res) => {
     foundedYear,
   } = req.body;
 
-  // 1. Check if user already owns a company
-  const existingCompany = await Company.findOne({ owner: req.user._id });
-  if (existingCompany) {
-    return res.status(400).json({ message: "User already owns a company" });
-  }
-
-  // 2. Upload logo if exists
-  let logoData = {};
+  // 5. Upload logo if exists
+  let logoUrl = "";
   if (req.file) {
     const uploadResult = await cloudUpload(req.file);
-    logoData = {
-      url: uploadResult.secure_url,
-      publicId: uploadResult.public_id,
-    };
+    logoUrl = uploadResult.secure_url;
   }
 
-  // 3. Create company
+  // 6. Create company
   const company = await Company.create({
     name,
     description,
@@ -45,20 +61,31 @@ const createCompany = asyncHandler(async (req, res) => {
     industry,
     size,
     foundedYear,
-    logo: logoData,
-    owner: req.user._id,
-    employees: [req.user._id],
+    logo: logoUrl,
+    createdBy: req.user._id,
+    owner: req.user._id, // For backward compatibility
+    members: [
+      {
+        user: req.user._id,
+        role: "owner",
+      }
+    ],
+    employees: [req.user._id], // For backward compatibility
   });
 
-  // 4. Attach company to user
+  // 7. Link company to user
   await User.findByIdAndUpdate(req.user._id, {
     company: company._id,
-    role: "employer",
   });
+
+  // 8. Return company with populated data
+  const populatedCompany = await Company.findById(company._id)
+    .populate("owner", "name email avatar")
+    .populate("members.user", "name email avatar");
 
   res.status(201).json({
     message: "Company created successfully",
-    company,
+    company: populatedCompany,
   });
 });
 
@@ -212,6 +239,34 @@ const addEmployee = asyncHandler(async (req, res) => {
   });
 });
 
+/**
+ * @desc    Get my company (logged-in user's company)
+ * @route   GET /api/company/my-company
+ * @access  Private (Employer)
+ */
+const getMyCompany = asyncHandler(async (req, res) => {
+  if (!req.user.company) {
+    return res.status(404).json({
+      message: "You don't belong to any company yet",
+      hasCompany: false
+    });
+  }
+
+  const company = await Company.findById(req.user.company)
+    .populate("owner", "name email avatar")
+    .populate("members.user", "name email avatar")
+    .populate("employees", "name email avatar");
+
+  if (!company) {
+    return res.status(404).json({ message: "Company not found" });
+  }
+
+  res.json({
+    hasCompany: true,
+    company
+  });
+});
+
 module.exports = {
   createCompany,
   getAllCompanies,
@@ -219,4 +274,5 @@ module.exports = {
   updateCompany,
   deleteCompany,
   addEmployee,
+  getMyCompany,
 };

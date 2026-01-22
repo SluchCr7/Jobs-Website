@@ -17,7 +17,7 @@ export interface User {
     };
     bio?: string;
     resume?: string;
-    company?: string; // ID of the company
+    company?: any; // Company object or ID
     isVerified: boolean;
     token?: string; // Token is appended on login
 }
@@ -25,6 +25,7 @@ export interface User {
 interface AuthContextType {
     user: User | null;
     loading: boolean;
+    hasCompany: boolean; // Helper to check if user has a company
     register: (data: any) => Promise<void>;
     login: (data: any) => Promise<void>;
     logout: () => void;
@@ -88,7 +89,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 setUser(user);
                 localStorage.setItem("user", JSON.stringify(user));
                 toast.success(message || "Registration successful");
-                router.push("/"); // Redirect to Home immediately
+
+                // EMPLOYER FLOW: Check if employer needs to create company
+                if (user.role === "employer") {
+                    if (!user.company) {
+                        // Redirect to create company page
+                        router.push("/Pages/CreateCompany");
+                    } else {
+                        // Already has company, go to dashboard/jobs
+                        router.push("/Pages/Jobs");
+                    }
+                } else {
+                    // JOB SEEKER FLOW: Go to job listings
+                    router.push("/Pages/Jobs");
+                }
             } else {
                 // Fallback if backend doesn't return auto-login data
                 toast.success(message || "Registration successful. Please login.");
@@ -155,8 +169,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    // Computed value: check if user has a company
+    const hasCompany = user?.company ? true : false;
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, register, logout, updateProfile, updateAvatar }}>
+        <AuthContext.Provider value={{ user, loading, hasCompany, login, register, logout, updateProfile, updateAvatar }}>
             {children}
         </AuthContext.Provider>
     );

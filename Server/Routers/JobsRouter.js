@@ -10,15 +10,16 @@ const {
 } = require("../Controllers/JobController");
 
 const {
-    protect, admin, sameUser, adminOrSameUser
+  protect, admin, sameUser, adminOrSameUser, isEmployerWithCompany
 } = require("../Middelwares/verifyToken");
 
-// Public
+// Public routes
 router.get("/", getAllJobs);
 router.get("/:id", getJobById);
-router.get("/company/:id", getAllJobsByCompany)
-// Protected
-router.post("/", protect, createJob);
+router.get("/company/:id", getAllJobsByCompany);
+
+// Protected routes (Employer with Company required)
+router.post("/", protect, isEmployerWithCompany, createJob);
 router.put("/:id", protect, adminOrSameUser, updateJob);
 router.delete("/:id", protect, adminOrSameUser, deleteJob);
 router.patch("/:id/status", protect, adminOrSameUser, changeJobStatus);

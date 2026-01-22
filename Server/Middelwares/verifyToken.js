@@ -13,8 +13,8 @@ const protect = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
 
-    // Fetch user from DB to ensure validity and get full profile
-    const user = await User.findById(decoded.id).select("-password");
+    // Fetch user from DB to ensure validity and get full profile including company
+    const user = await User.findById(decoded.id).select("-password").populate("company");
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
@@ -36,9 +36,47 @@ const admin = (req, res, next) => {
   }
 };
 
+// Employer only
+const isEmployer = (req, res, next) => {
+  if (req.user.role === "employer" || req.user.role === "admin") {
+    next();
+  } else {
+    return res.status(403).json({
+      message: "Access denied. Employer role required."
+    });
+  }
+};
+
+// Employer with company
+const hasCompany = (req, res, next) => {
+  if (!req.user.company) {
+    return res.status(403).json({
+      message: "You must create or join a company first."
+    });
+  }
+  next();
+};
+
+// Employer with company (combined check)
+const isEmployerWithCompany = (req, res, next) => {
+  if (req.user.role !== "employer" && req.user.role !== "admin") {
+    return res.status(403).json({
+      message: "Access denied. Employer role required."
+    });
+  }
+
+  if (!req.user.company) {
+    return res.status(403).json({
+      message: "You must create or join a company first to perform this action."
+    });
+  }
+
+  next();
+};
+
 // Same user only
 const sameUser = (req, res, next) => {
-  if (req.user._id === req.params.id) {
+  if (req.user._id.toString() === req.params.id) {
     next();
   } else {
     return res.status(403).json({ message: "You are not this user!" });
@@ -47,11 +85,19 @@ const sameUser = (req, res, next) => {
 
 // Admin or same user
 const adminOrSameUser = (req, res, next) => {
-  if (req.user.role === "admin" || req.user._id === req.params.id) {
+  if (req.user.role === "admin" || req.user._id.toString() === req.params.id) {
     next();
   } else {
     return res.status(403).json({ message: "You are not authorized!" });
   }
 };
 
-module.exports = { protect, admin, sameUser, adminOrSameUser };
+module.exports = {
+  protect,
+  admin,
+  isEmployer,
+  hasCompany,
+  isEmployerWithCompany,
+  sameUser,
+  adminOrSameUser
+};

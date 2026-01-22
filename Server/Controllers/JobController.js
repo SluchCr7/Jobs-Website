@@ -3,18 +3,39 @@ const { Job } = require("../Modules/Job");
 
 /**
  * @desc    Create new job
- * @route   POST /api/jobs
- * @access  Private (Admin / Company)
+ * @route   POST /api/job
+ * @access  Private (Employer with Company)
  */
 const createJob = asyncHandler(async (req, res) => {
+  // 1. Validate role
+  if (req.user.role !== "employer" && req.user.role !== "admin") {
+    return res.status(403).json({
+      message: "Only employers can create jobs"
+    });
+  }
+
+  // 2. Validate company
+  if (!req.user.company) {
+    return res.status(403).json({
+      message: "You must create or join a company before posting jobs"
+    });
+  }
+
+  // 3. Create job with company automatically attached
   const job = await Job.create({
     ...req.body,
+    company: req.user.company._id || req.user.company, // Handle both populated and non-populated
     createdBy: req.user._id,
   });
 
+  // 4. Populate and return
+  const populatedJob = await Job.findById(job._id)
+    .populate("company", "name logo location")
+    .populate("createdBy", "name email");
+
   res.status(201).json({
     message: "Job created successfully",
-    job,
+    job: populatedJob,
   });
 });
 

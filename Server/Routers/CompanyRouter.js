@@ -5,18 +5,23 @@ const {
   updateCompany,
   deleteCompany,
   addEmployee,
+  getMyCompany,
 } = require("../Controllers/CompanyController");
 
 const express = require("express");
 const router = express.Router();
 
 const photoUpload = require("../Middelwares/UploadPhoto");
-const { protect } = require("../Middelwares/verifyToken");
+const { protect, isEmployer } = require("../Middelwares/verifyToken");
 
-// ✅ Create company + upload logo
+// ✅ Get my company (must be before /:id to avoid conflict)
+router.get("/my-company", protect, isEmployer, getMyCompany);
+
+// ✅ Create company + upload logo (Employer only)
 router.post(
   "/",
   protect,
+  isEmployer,
   photoUpload.single("logo"),
   createCompany
 );
@@ -24,7 +29,7 @@ router.post(
 // ✅ Get all companies (public)
 router.get("/", getAllCompanies);
 
-// ✅ Get single company
+// ✅ Get single company (public)
 router.get("/:id", getCompanyById);
 
 // ✅ Update company (owner check inside controller)
