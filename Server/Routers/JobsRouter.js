@@ -16,7 +16,7 @@ const {
 // Public
 router.get("/", getAllJobs);
 router.get("/:id", getJobById);
-router.get("/company/:id" , getAllJobsByCompany)
+router.get("/company/:id", getAllJobsByCompany)
 // Protected
 router.post("/", protect, createJob);
 router.put("/:id", protect, adminOrSameUser, updateJob);

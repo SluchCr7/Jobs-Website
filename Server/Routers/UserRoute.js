@@ -16,3 +16,5 @@ route.route("/avatar")
 
 route.route("/profile")
     .get(protect,getUserProfile)
+
+module.exports = route
