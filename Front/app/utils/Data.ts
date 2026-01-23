@@ -6,8 +6,8 @@ import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from 'react-icons/f
 export const links: LinkItem[] = [
   { id: 1, title: "Find Job", url: "/Pages/Jobs" },
   { id: 2, title: "Pricing", url: "/Pages/Pricing" },
-  { id: 3, title: "Companies", url: "/Pages/Companies" },
-  { id: 4, title: "Contact", url: "/Pages/Contact" },
+  { id: 3, title: "Blog", url: "/Pages/Blog" },
+  { id: 4, title: "Companies", url: "/Pages/Companies" },
 ];
 
 export const featuredJobs: Job[] = [

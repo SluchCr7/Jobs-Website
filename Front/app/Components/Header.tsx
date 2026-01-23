@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { Menu, X, Bell, User, Sun, Moon, LogOut, ChevronDown, LayoutDashboard, HelpCircle, Mail } from 'lucide-react';
+import { Menu, X, Bell, User, Sun, Moon, LogOut, ChevronDown, LayoutDashboard, HelpCircle, Mail, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../Context/AuthContext';
 import { links } from '@/app/utils/Data';
@@ -149,6 +149,9 @@ export default function Header() {
                                 <LayoutDashboard size={16} /> Post Job
                               </Link>
                             )}
+                            <Link href="/Pages/Saved" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                              <Heart size={16} /> Saved Jobs
+                            </Link>
                             <button
                               onClick={logout}
                               className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"

@@ -111,7 +111,7 @@ export default function JobDetailPage() {
                 </div>
                 <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
                   <FaMoneyBillWave className="text-green-500" />
-                  <span>{selectedJob.salary}</span>
+                  <span>{typeof selectedJob.salary === 'object' ? `${selectedJob.salary.min} - ${selectedJob.salary.max} ${selectedJob.salary.currency}` : selectedJob.salary}</span>
                 </div>
                 <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
                   <MdWork className="text-amber-500" />

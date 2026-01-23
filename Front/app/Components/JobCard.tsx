@@ -84,7 +84,7 @@ export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
                     {job.salary && (
                         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
                             <DollarSign className="w-3.5 h-3.5" />
-                            {job.salary}
+                            {typeof job.salary === 'object' ? `${job.salary.min} - ${job.salary.max} ${job.salary.currency}` : job.salary}
                         </div>
                     )}
                 </div>

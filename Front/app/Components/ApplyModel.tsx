@@ -60,27 +60,27 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
             {/* Step 1 — Confirmation */}
             {step === 1 && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-heading font-bold text-slate-900 dark:text-white">
                   Apply for {job.title}
                 </h2>
-                <p className="text-gray-600 mt-3">
+                <p className="text-slate-600 dark:text-slate-400 mt-3">
                   You are about to apply for this position. Please confirm to proceed.
                 </p>
-                <div className="bg-gray-50 p-4 rounded-xl mt-5 border">
-                  <p><strong>Company:</strong> {typeof job.company === 'string' ? job.company : job.company.name}</p>
-                  <p><strong>Location:</strong> {job.location}</p>
-                  <p><strong>Work Mode:</strong> {job.remote ? "Remote" : "On-site"}</p>
+                <div className="bg-slate-50 dark:bg-slate-700/50 p-6 rounded-2xl mt-6 border border-slate-100 dark:border-slate-600">
+                  <p className="flex justify-between py-1"><strong className="text-slate-700 dark:text-slate-200">Company:</strong> <span className="text-slate-600 dark:text-slate-400">{typeof job.company === 'string' ? job.company : job.company.name}</span></p>
+                  <p className="flex justify-between py-1"><strong className="text-slate-700 dark:text-slate-200">Location:</strong> <span className="text-slate-600 dark:text-slate-400">{job.location}</span></p>
+                  <p className="flex justify-between py-1"><strong className="text-slate-700 dark:text-slate-200">Work Mode:</strong> <span className="text-slate-600 dark:text-slate-400">{job.remote ? "Remote" : "On-site"}</span></p>
                 </div>
                 <div className="flex gap-4 mt-8">
                   <button
                     onClick={() => setStep(2)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
+                    className="flex-1 btn-primary py-3"
                   >
                     Continue
                   </button>
                   <button
                     onClick={onClose}
-                    className="flex-1 border border-gray-300 py-3 rounded-xl font-semibold"
+                    className="flex-1 btn-outline py-3"
                   >
                     Cancel
                   </button>
@@ -91,23 +91,23 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
             {/* Step 2 — Resume Upload */}
             {step === 2 && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-heading font-bold text-slate-900 dark:text-white">
                   Upload Your Resume
                 </h2>
-                <p className="text-gray-600 mt-3">
+                <p className="text-slate-600 dark:text-slate-400 mt-3">
                   Upload a new resume or choose one from your saved files.
                 </p>
 
                 {!resume ? (
-                  <label className="mt-6 block w-full border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:bg-gray-50">
+                  <label className="mt-6 block w-full border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-10 text-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                     <input type="file" hidden onChange={uploadResume} />
-                    <p className="text-gray-700">Click to upload your resume (PDF / DOCX)</p>
+                    <p className="text-slate-700 dark:text-slate-300 font-medium">Click to upload your resume (PDF / DOCX)</p>
                   </label>
                 ) : (
-                  <div className="mt-5 bg-gray-100 p-4 rounded-xl">
-                    <p className="font-medium text-gray-700">{resume.name}</p>
+                  <div className="mt-5 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl flex items-center justify-between">
+                    <p className="font-medium text-slate-700 dark:text-slate-200">{resume.name}</p>
                     <button
-                      className="mt-3 text-red-500 underline"
+                      className="text-red-500 hover:text-red-600 font-medium text-sm"
                       onClick={() => setResume(null)}
                     >
                       Remove
@@ -118,13 +118,13 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
                 <div className="flex gap-4 mt-8">
                   <button
                     onClick={() => setStep(3)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
+                    className="flex-1 btn-primary py-3"
                   >
                     Continue
                   </button>
                   <button
                     onClick={() => setStep(1)}
-                    className="flex-1 border border-gray-300 py-3 rounded-xl font-semibold"
+                    className="flex-1 btn-outline py-3"
                   >
                     Back
                   </button>
@@ -135,26 +135,26 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
             {/* Step 3 — Cover Letter */}
             {step === 3 && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-heading font-bold text-slate-900 dark:text-white">
                   Write a Short Cover Letter
                 </h2>
                 <textarea
                   value={coverLetter}
                   onChange={(e) => setCoverLetter(e.target.value)}
-                  className="w-full mt-5 p-4 border rounded-xl h-32"
+                  className="w-full mt-5 p-4 border-2 border-slate-200 dark:border-slate-700 rounded-2xl h-40 bg-transparent text-slate-900 dark:text-white focus:border-primary-500 focus:outline-none transition-colors"
                   placeholder="Explain briefly why you're a good fit for this role..."
                 />
 
                 <div className="flex gap-4 mt-8">
                   <button
                     onClick={() => setStep(4)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
+                    className="flex-1 btn-primary py-3"
                   >
                     Submit Application
                   </button>
                   <button
                     onClick={() => setStep(2)}
-                    className="flex-1 border border-gray-300 py-3 rounded-xl font-semibold"
+                    className="flex-1 btn-outline py-3"
                   >
                     Back
                   </button>
@@ -164,24 +164,24 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
 
             {/* Step 4 — Success */}
             {step === 4 && (
-              <div className="text-center">
-                <div className="text-green-600 text-5xl font-bold">✔</div>
-                <h2 className="text-2xl font-bold mt-4 text-gray-900">
+              <div className="text-center py-4">
+                <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">✔</div>
+                <h2 className="text-2xl font-heading font-bold mt-4 text-slate-900 dark:text-white">
                   Application Submitted!
                 </h2>
-                <p className="text-gray-600 mt-2">
-                  We will notify you once the employer reviews your application.
+                <p className="text-slate-600 dark:text-slate-400 mt-2 max-w-sm mx-auto">
+                  We will notify you once the employer reviews your application. Good luck!
                 </p>
 
                 <div className="mt-8 flex gap-4">
                   <button
                     onClick={() => { setStep(1); onClose(); }}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold"
+                    className="flex-1 btn-primary py-3"
                   >
                     Back to Job
                   </button>
 
-                  <button className="flex-1 border border-gray-300 py-3 rounded-xl font-semibold">
+                  <button className="flex-1 btn-outline py-3">
                     View Applications
                   </button>
                 </div>

@@ -55,7 +55,7 @@ export interface JobsData {
   location: string;
   remote: boolean;
 
-  salary: string;
+  salary: string | { min: number; max: number; currency: string };
   skills: string[];
 
   /** filters */
