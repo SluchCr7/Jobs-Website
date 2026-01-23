@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FiArrowUp } from 'react-icons/fi';
+import { ArrowUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ScrollToTop() {
@@ -31,14 +31,14 @@ export default function ScrollToTop() {
         <AnimatePresence>
             {isVisible && (
                 <motion.button
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.5 }}
                     onClick={scrollToTop}
-                    className="fixed bottom-8 right-8 z-40 p-3 rounded-full bg-primary-600 text-white shadow-lg shadow-primary-600/30 hover:bg-primary-700 hover:scale-110 transition-all border border-primary-500"
+                    className="fixed bottom-8 right-8 z-40 p-3 rounded-full btn-primary shadow-2xl hover:scale-110 active:scale-95"
                     aria-label="Scroll to top"
                 >
-                    <FiArrowUp className="w-6 h-6" />
+                    <ArrowUp className="w-6 h-6" />
                 </motion.button>
             )}
         </AnimatePresence>

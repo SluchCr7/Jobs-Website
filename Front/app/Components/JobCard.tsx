@@ -1,8 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FiClock, FiMapPin, FiDollarSign } from 'react-icons/fi';
+import { MapPin, Clock, DollarSign, Building2, ArrowRight, Heart } from 'lucide-react';
 import { JobsData } from '../utils/Types';
+import Image from 'next/image';
 
 interface JobCardProps {
     job: JobsData;
@@ -12,7 +13,6 @@ interface JobCardProps {
 export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
     const isList = variant === 'list';
     const companyName = typeof job.company === 'string' ? job.company : job.company?.name || 'Unknown Company';
-    // Backend returns company with logo Object { url: ... }, Mock returns logoUrl or logo string
     const companyLogo = typeof job.company === 'object' && job.company?.logo?.url
         ? job.company.logo.url
         : (job.logo || (typeof job.company === 'object' ? job.company.logoUrl : '') || '');
@@ -20,69 +20,99 @@ export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
 
     return (
         <motion.article
+            layout
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            whileHover={{ y: -4 }}
-            className={`group relative flex ${isList ? 'flex-col sm:flex-row gap-6' : 'flex-col'} p-6 rounded-2xl bg-white border border-slate-100 hover:border-primary-100 shadow-sm hover:shadow-xl hover:shadow-primary-900/5 transition-all duration-300 dark:bg-slate-800 dark:border-slate-700`}
+            className={`group relative flex ${isList ? 'flex-col sm:flex-row gap-6' : 'flex-col h-full'} 
+                p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 
+                hover:shadow-2xl hover:shadow-primary-500/10 dark:hover:shadow-primary-900/10 
+                hover:-translate-y-1 transition-all duration-300 overflow-hidden`}
         >
-            <div className={`flex ${isList ? 'flex-col sm:flex-row gap-4 flex-1' : 'flex-col gap-4'}`}>
-                <div className="flex items-start justify-between w-full">
-                    <div className="flex items-center gap-4">
-                        <div className={`${isList ? 'w-16 h-16' : 'w-14 h-14'} shrink-0 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100 dark:bg-slate-700 dark:border-slate-600 overflow-hidden`}>
-                            {companyLogo ? (
-                                <img src={companyLogo} alt={companyName} className="w-full h-full object-contain p-2" />
-                            ) : (
-                                <span className="font-bold text-xl text-primary-600">{companyName?.[0] || 'C'}</span>
-                            )}
-                        </div>
-                        <div>
-                            <h3 className="font-heading font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors line-clamp-1">
-                                {job.title}
-                            </h3>
-                            <p className="text-sm text-slate-500 font-medium dark:text-slate-400">{companyName}</p>
-                        </div>
-                    </div>
+            {/* Gradient Overlay on Hover */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-50/50 to-transparent dark:from-primary-900/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-                    {job.favorite && (
-                        <span className="text-primary-500">❤️</span>
+            {/* Header section */}
+            <div className="relative flex justify-between items-start mb-4">
+                <div className="flex gap-4">
+                    <div className="w-14 h-14 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600 flex items-center justify-center p-2 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                        {companyLogo ? (
+                            <Image
+                                src={companyLogo}
+                                alt={companyName}
+                                width={48}
+                                height={48}
+                                className="w-full h-full object-contain"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                                {companyName?.[0] || 'C'}
+                            </div>
+                        )}
+                    </div>
+                </div>
+                {job.favorite && (
+                    <div className="text-red-500 p-2 bg-red-50 dark:bg-red-900/20 rounded-full">
+                        <Heart className="w-4 h-4 fill-current" />
+                    </div>
+                )}
+            </div>
+
+            {/* Content section */}
+            <div className="relative flex-1">
+                <Link href={`/Pages/Job/${jobId}`} className="block group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                    <h3 className="text-xl font-heading font-bold text-slate-900 dark:text-white mb-1 line-clamp-1">
+                        {job.title}
+                    </h3>
+                </Link>
+
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4">
+                    <Building2 className="w-4 h-4" />
+                    <span className="font-medium">{companyName}</span>
+                </div>
+
+                {/* Metadata Pills */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {job.location || 'Remote'}
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300">
+                        <Clock className="w-3.5 h-3.5" />
+                        {job.employmentType?.replace("_", " ") || 'Full Time'}
+                    </div>
+                    {job.salary && (
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+                            <DollarSign className="w-3.5 h-3.5" />
+                            {job.salary}
+                        </div>
                     )}
                 </div>
 
-                <div className={`space-y-3 ${isList ? 'mt-0' : 'mb-6'}`}>
-                    <div className="flex flex-wrap gap-2 text-sm text-slate-500 dark:text-slate-400">
-                        <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md dark:bg-slate-700/50">
-                            <FiMapPin className="w-4 h-4" />
-                            <span>{job.location}</span>
-                        </div>
-                        <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md dark:bg-slate-700/50">
-                            <FiClock className="w-4 h-4" />
-                            <span>{job.employmentType?.replace("_", " ")}</span>
-                        </div>
-                        <div className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md dark:bg-slate-700/50">
-                            <FiDollarSign className="w-4 h-4" />
-                            <span>{job.salary}</span>
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                        {job.skills?.slice(0, 3).map((skill, i) => (
-                            <span key={i} className="text-xs font-medium px-2.5 py-1 rounded-full bg-primary-50 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
-                                {skill}
-                            </span>
-                        ))}
-                    </div>
-
-                    {isList && <p className="text-slate-500 text-sm line-clamp-2 mt-2">{job.description}</p>}
+                {/* Skills Preview */}
+                <div className="flex flex-wrap gap-2 mb-6">
+                    {job.skills?.slice(0, 3).map((skill, i) => (
+                        <span key={i} className="text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400">
+                            {skill}
+                        </span>
+                    ))}
+                    {job.skills && job.skills.length > 3 && (
+                        <span className="text-[10px] px-2 py-1 text-slate-400">+{job.skills.length - 3} more</span>
+                    )}
                 </div>
             </div>
 
-            <div className={`${isList ? 'mt-4 sm:mt-0 sm:ml-auto w-full sm:w-auto flex sm:flex-col justify-center' : 'mt-auto'} flex items-center gap-3`}>
-                <Link href={`/Pages/Job/${jobId}`} className="flex-1 btn-outline text-center text-sm py-2 px-4 whitespace-nowrap">
-                    Details
+            {/* Footer Actions */}
+            <div className="relative mt-auto pt-4 border-t border-slate-100 dark:border-slate-700/50 flex items-center justify-between gap-4">
+                <Link
+                    href={`/Pages/Job/${jobId}`}
+                    className="flex-1 text-center py-2.5 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                >
+                    View Details
                 </Link>
-                <button className="flex-1 btn-primary text-sm py-2 px-4 whitespace-nowrap">
-                    Apply Now
+                <button className="flex-1 btn-primary py-2.5 text-sm flex items-center justify-center gap-2 group/btn">
+                    Apply
+                    <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                 </button>
             </div>
         </motion.article>
