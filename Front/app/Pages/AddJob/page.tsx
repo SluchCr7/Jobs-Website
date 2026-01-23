@@ -73,17 +73,13 @@ export default function AddJobPage() {
 
       // Parse salary (Basic logic: extract numbers)
       // e.g. "80k - 120k" -> 80000, 120000
-      const salaryNumbers = job.salary?.match(/\d+/g)?.map(n => parseInt(n));
+      const salaryStr = typeof job.salary === 'string' ? job.salary : '';
+      const salaryNumbers = salaryStr.match(/\d+/g)?.map(n => parseInt(n));
       let min = 0, max = 0;
       if (salaryNumbers && salaryNumbers.length > 0) {
         // Check if 'k' is involved or just raw numbers. 
-        // Simple approach: if < 1000 assume k. (Risky). 
-        // Better: just check the string content? 
-        // Allow user to enter raw string but we need to send object to backend.
-        // Backend Schema: salary: { min, max, currency }.
-        // We will do best effort or send 0.
-        min = salaryNumbers[0] * (job.salary?.toLowerCase().includes('k') ? 1000 : 1);
-        if (salaryNumbers.length > 1) max = salaryNumbers[1] * (job.salary?.toLowerCase().includes('k') ? 1000 : 1);
+        min = salaryNumbers[0] * (salaryStr.toLowerCase().includes('k') ? 1000 : 1);
+        if (salaryNumbers.length > 1) max = salaryNumbers[1] * (salaryStr.toLowerCase().includes('k') ? 1000 : 1);
       }
 
       const payload = {
@@ -231,7 +227,7 @@ export default function AddJobPage() {
                     <input
                       type="text"
                       placeholder="e.g. $80k - $120k"
-                      value={job.salary}
+                      value={typeof job.salary === 'string' ? job.salary : ''}
                       onChange={(e) => handleChange("salary", e.target.value)}
                       className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all dark:text-white placeholder:text-slate-400"
                     />
