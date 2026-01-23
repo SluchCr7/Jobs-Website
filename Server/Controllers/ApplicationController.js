@@ -3,13 +3,16 @@ const { Application } = require("../Modules/Application");
 const { Job } = require("../Modules/Job");
 const { Company } = require("../Modules/Company");
 
+const { cloudUpload } = require("../config/cloudUpload");
+
 /**
  * @desc    Apply to a job
  * @route   POST /api/applications
  * @access  Private (User)
  */
 const applyToJob = asyncHandler(async (req, res) => {
-  const { jobId, resume, coverLetter } = req.body;
+  const { jobId, coverLetter } = req.body;
+  let resume = req.body.resume; // In case it's sent as string URL
 
   // 1. Check job exists
   const job = await Job.findById(jobId);
@@ -22,7 +25,28 @@ const applyToJob = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "You cannot apply to your own job" });
   }
 
-  // 3. Create application
+  // 3. Prevent duplicate application
+  const existingApp = await Application.findOne({
+    job: jobId,
+    applicant: req.user._id
+  });
+  if (existingApp) {
+    return res.status(400).json({ message: "You have already applied to this job" });
+  }
+
+  // 4. Handle Resume Upload
+  if (req.file) {
+    const uploadResult = await cloudUpload(req.file);
+    resume = uploadResult.secure_url;
+  }
+
+  if (!resume) {
+    // Fallback: Check if user has a resume in their profile
+    // For now, we require it explicitly
+    return res.status(400).json({ message: "Resume is required (upload or URL)" });
+  }
+
+  // 5. Create application
   const application = await Application.create({
     job: job._id,
     applicant: req.user._id,

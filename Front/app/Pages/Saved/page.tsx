@@ -117,7 +117,7 @@ export default function SavedJobsPage() {
 
                     <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-slate-500 dark:text-slate-400">
                       <span className="flex items-center gap-1"><FaMapMarkerAlt className="text-primary-500" /> {job.location}</span>
-                      <span className="flex items-center gap-1"><FaMoneyBillWave className="text-green-500" /> {job.salary}</span>
+                      <span className="flex items-center gap-1"><FaMoneyBillWave className="text-green-500" /> {typeof job.salary === 'object' ? `${job.salary.min} - ${job.salary.max} ${job.salary.currency}` : job.salary}</span>
                       <span className={`px-2 py-0.5 rounded text-xs font-semibold ${job.remote ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"}`}>
                         {job.remote ? "Remote" : "On-site"}
                       </span>

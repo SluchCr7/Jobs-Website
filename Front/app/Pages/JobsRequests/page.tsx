@@ -1,73 +1,61 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { jobs } from "@/app/utils/Data";
 import Link from 'next/link';
-
-interface AppliedJob {
-  id: number;
-  title: string;
-  company: string;
-  companyLogo: string;
-  appliedDate: string;
-  employmentType: string;
-  status: "Pending" | "Accepted" | "Rejected";
-}
-
-const appliedJobs: AppliedJob[] = jobs.map((job, idx) => {
-  const companyName = typeof job.company === 'string' ? job.company : job.company.name;
-
-  let logo = "/placeholder.png";
-  if (job.logo) {
-    logo = job.logo;
-  } else if (typeof job.company !== 'string' && job.company.logo?.url) {
-    logo = job.company.logo.url;
-  } else if (typeof job.company !== 'string' && job.company.logoUrl) {
-    logo = job.company.logoUrl;
-  }
-
-  const employmentType = job.employmentType ?? "full_time";
-
-  return {
-    id: job.id,
-    title: job.title,
-    company: companyName,
-    companyLogo: logo,
-    appliedDate: "2025-12-09",
-    employmentType,
-    status: ["Pending", "Accepted", "Rejected"][idx % 3] as
-      | "Pending"
-      | "Accepted"
-      | "Rejected",
-  };
-});
-
+import { useApplications } from "@/app/Context/ApplicationContext";
+import { useAuth } from "@/app/Context/AuthContext";
 
 export default function MyApplicationsPage() {
-  const [filter, setFilter] = useState<"All" | "Pending" | "Accepted" | "Rejected">("All");
+  const [filter, setFilter] = useState<"All" | "pending" | "accepted" | "rejected">("All");
   const [search, setSearch] = useState("");
+  const { myApplications, loading, fetchMyApplications } = useApplications();
+  const { user } = useAuth();
 
-  const filteredJobs = appliedJobs.filter(
-    (job) =>
-      (filter === "All" || job.status === filter) &&
-      (job.title.toLowerCase().includes(search.toLowerCase()) ||
-        job.company.toLowerCase().includes(search.toLowerCase()))
+  useEffect(() => {
+    fetchMyApplications();
+  }, [fetchMyApplications]);
+
+  const filteredJobs = myApplications.filter(
+    (app) =>
+      (filter === "All" || app.status === filter) &&
+      (app.job?.title?.toLowerCase().includes(search.toLowerCase()) ||
+        app.company?.name?.toLowerCase().includes(search.toLowerCase()))
   );
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "Pending":
+      case "pending":
         return "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
-      case "Accepted":
+      case "accepted":
         return "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800";
-      case "Rejected":
+      case "rejected":
         return "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800";
-      default:
-        return "";
+      default: // reviewed etc
+        return "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 border border-blue-200 dark:border-blue-800";
     }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-12 flex justify-center items-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Please Login</h1>
+          <p className="text-slate-600 dark:text-slate-400 mt-2">You need to be logged in to view your applications.</p>
+          <Link href="/Pages/Login" className="btn-primary mt-4 inline-block">Login</Link>
+        </div>
+      </div>
+    )
+  }
+
+  if (loading && myApplications.length === 0) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-12 flex justify-center items-center">
+        <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 font-sans transition-colors pt-24 pb-12">
@@ -105,11 +93,11 @@ export default function MyApplicationsPage() {
           </div>
 
           <div className="flex w-full lg:w-auto overflow-x-auto gap-2 pb-2 lg:pb-0 scrollbar-hide">
-            {["All", "Pending", "Accepted", "Rejected"].map((tab) => (
+            {["All", "pending", "accepted", "rejected"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setFilter(tab as any)}
-                className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${filter === tab
+                className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap capitalize ${filter === tab
                   ? "bg-primary-600 text-white shadow-lg shadow-primary-500/30"
                   : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600"
                   }`}
@@ -143,9 +131,9 @@ export default function MyApplicationsPage() {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 gap-4">
-              {filteredJobs.map((job) => (
+              {filteredJobs.map((app) => (
                 <motion.div
-                  key={job.id}
+                  key={app._id}
                   layout
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -155,39 +143,48 @@ export default function MyApplicationsPage() {
                 >
                   <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full md:w-auto text-center sm:text-left">
                     <div className="w-16 h-16 relative bg-slate-50 dark:bg-slate-700 rounded-xl p-2 shrink-0 border border-slate-100 dark:border-slate-600">
-                      <Image
-                        src={job.companyLogo}
-                        alt={job.company}
-                        fill
-                        className="object-contain p-1"
-                      />
+                      {app.company?.logo ? (
+                        <img
+                          src={app.company.logo}
+                          alt={app.company.name}
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center font-bold text-slate-400 text-xl">{app.company?.name?.[0]}</div>
+                      )}
+
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">{job.title}</h3>
-                      <p className="text-slate-600 dark:text-slate-300 font-medium">{job.company}</p>
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">{app.job?.title || "Unknown Job"}</h3>
+                      <p className="text-slate-600 dark:text-slate-300 font-medium">{app.company?.name || "Unknown Company"}</p>
                       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-2 text-sm text-slate-500 dark:text-slate-400">
                         <span className="flex items-center gap-1">
-                          📅 {job.appliedDate}
+                          📅 {new Date(app.createdAt).toLocaleDateString()}
                         </span>
-                        <span className="hidden sm:inline">•</span>
-                        <span className="capitalize">{job.employmentType.replace('_', ' ')}</span>
+                        {app.job?.jobType && (
+                          <>
+                            <span className="hidden sm:inline">•</span>
+                            <span className="capitalize">{app.job.jobType.replace('_', ' ')}</span>
+                          </>
+                        )}
+
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
                     <span
-                      className={`px-4 py-1.5 rounded-full font-semibold text-sm flex items-center gap-2 ${getStatusStyle(job.status)}`}
+                      className={`px-4 py-1.5 rounded-full font-semibold text-sm flex items-center gap-2 capitalize ${getStatusStyle(app.status)}`}
                     >
-                      {job.status === "Pending" && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />}
-                      {job.status === "Accepted" && <span className="w-2 h-2 rounded-full bg-green-500" />}
-                      {job.status === "Rejected" && <span className="w-2 h-2 rounded-full bg-red-500" />}
-                      {job.status}
+                      {app.status === "pending" && <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />}
+                      {app.status === "accepted" && <span className="w-2 h-2 rounded-full bg-green-500" />}
+                      {app.status === "rejected" && <span className="w-2 h-2 rounded-full bg-red-500" />}
+                      {app.status}
                     </span>
 
-                    <button className="px-4 py-2 text-primary-600 font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors text-sm whitespace-nowrap">
-                      View Details
-                    </button>
+                    <Link href={`/Pages/Job/${app.job?._id || app.job?.id}`} className="px-4 py-2 text-primary-600 font-medium hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors text-sm whitespace-nowrap">
+                      View Job
+                    </Link>
                   </div>
                 </motion.div>
               ))}

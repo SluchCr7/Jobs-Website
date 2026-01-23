@@ -9,7 +9,7 @@ interface ApplicationContextType {
     myApplications: any[];
     jobApplications: any[]; // For employers viewing apps for a job
     loading: boolean;
-    applyToJob: (jobId: string) => Promise<void>;
+    applyToJob: (jobId: string, resume: File | null, coverLetter: string) => Promise<void>;
     fetchMyApplications: () => Promise<void>;
     fetchJobApplications: (jobId: string) => Promise<void>;
     updateApplicationStatus: (id: string, status: string) => Promise<void>;
@@ -29,24 +29,34 @@ export const ApplicationProvider = ({ children }: { children: React.ReactNode })
         setLoading(true);
         try {
             const response = await API.get("/app/my-applications");
-            setMyApplications(response.data);
+            // Check if data is array
+            if (Array.isArray(response.data)) {
+                setMyApplications(response.data);
+            } else {
+                setMyApplications([]);
+            }
         } catch (err: any) {
             console.error("Failed to fetch applications", err);
-            // No static fallback for user-specific data usually, optionally mock if needed
         } finally {
             setLoading(false);
         }
     };
 
-    const applyToJob = async (jobId: string) => {
+    const applyToJob = async (jobId: string, resume: File | null, coverLetter: string) => {
         setLoading(true);
         try {
-            // Assuming resume is already in user profile or sent in body?
-            // Controller: applyToJob -> const { jobId } = req.body; 
-            // User must have resume uploaded in profile or passed here?
-            // Checking ApplicationController would clarify, but let's assume simple ID post
+            const formData = new FormData();
+            formData.append("jobId", jobId);
+            if (resume) {
+                formData.append("resume", resume);
+            }
+            if (coverLetter) {
+                formData.append("coverLetter", coverLetter);
+            }
 
-            await API.post("/app/apply", { jobId });
+            await API.post("/app/apply", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
             toast.success("Applied successfully!");
             fetchMyApplications();
         } catch (err: any) {

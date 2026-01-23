@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { JobsData } from "../utils/Types";
+import { useApplications } from "../Context/ApplicationContext";
+import { toast } from "sonner";
 
 interface ApplyJobModalProps {
   open: boolean;
@@ -14,9 +16,31 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
   const [step, setStep] = useState(1);
   const [resume, setResume] = useState<File | null>(null);
   const [coverLetter, setCoverLetter] = useState("");
+  const { applyToJob } = useApplications();
+  const [submitting, setSubmitting] = useState(false);
 
   const uploadResume = (e: React.ChangeEvent<HTMLInputElement>) => {
     setResume(e.target.files?.[0] || null);
+  };
+
+  const handleSubmitApplication = async () => {
+    if (!resume) {
+      toast.error("Please upload your resume first.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // Handle both _id (backend) and id (frontend mock)
+      const jobId = (job as any)._id || job.id.toString();
+      await applyToJob(jobId, resume, coverLetter);
+      setStep(4);
+    } catch (e) {
+      console.error(e);
+      // Toast handled in context
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const stepsCount = 4;
@@ -147,10 +171,15 @@ export default function ApplyJobModal({ open, onClose, job }: ApplyJobModalProps
 
                 <div className="flex gap-4 mt-8">
                   <button
-                    onClick={() => setStep(4)}
-                    className="flex-1 btn-primary py-3"
+                    onClick={handleSubmitApplication}
+                    disabled={submitting}
+                    className="flex-1 btn-primary py-3 flex items-center justify-center"
                   >
-                    Submit Application
+                    {submitting ? (
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      "Submit Application"
+                    )}
                   </button>
                   <button
                     onClick={() => setStep(2)}

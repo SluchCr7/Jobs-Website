@@ -11,14 +11,16 @@ const {
     protect, admin, sameUser, adminOrSameUser
 } = require("../Middelwares/verifyToken");
 
+const fileUpload = require("../Middelwares/UploadFile");
+
 route.route("/apply")
-    .post(protect,applyToJob)
+    .post(protect, fileUpload.single("resume"), applyToJob)
 route.route("/my-applications")
-    .get(protect,getMyApplications)
+    .get(protect, getMyApplications)
 route.route("/job/:id/applications")
-    .get(protect,getJobApplications)
+    .get(protect, getJobApplications)
 route.route("/update")
-    .put(protect,adminOrSameUser,updateApplicationStatus)
+    .put(protect, adminOrSameUser, updateApplicationStatus)
 route.route("/delete/:id")
-    .delete(protect,adminOrSameUser,deleteApplication)
+    .delete(protect, adminOrSameUser, deleteApplication)
 module.exports = route
