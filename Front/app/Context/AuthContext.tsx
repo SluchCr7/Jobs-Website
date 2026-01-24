@@ -33,6 +33,7 @@ interface AuthContextType {
     logout: () => void;
     updateProfile: (data: any) => Promise<void>;
     updateAvatar: (formData: FormData) => Promise<void>;
+    oauthLogin: (token: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -171,11 +172,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    const oauthLogin = async (token: string) => {
+        try {
+            setLoading(true);
+            localStorage.setItem("user", JSON.stringify({ token }));
+            const response = await API.get("/user/profile");
+            const user = { ...response.data, token };
+            setUser(user);
+            localStorage.setItem("user", JSON.stringify(user));
+            toast.success("Login successful");
+            router.push("/");
+        } catch (error: any) {
+            console.error("OAuth Login Error", error);
+            localStorage.removeItem("user");
+            toast.error("Authentication failed");
+            router.push("/Pages/Login");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // Computed value: check if user has a company
     const hasCompany = user?.company ? true : false;
 
     return (
-        <AuthContext.Provider value={{ user, loading, hasCompany, login, register, logout, updateProfile, updateAvatar }}>
+        <AuthContext.Provider value={{ user, loading, hasCompany, login, register, logout, updateProfile, updateAvatar, oauthLogin }}>
             {children}
         </AuthContext.Provider>
     );

@@ -19,6 +19,14 @@ const LoginPage = () => {
     await login({ email, password });
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_BACK_URL || 'http://localhost:5000'}/api/auth/google`;
+  };
+
+  const handleLinkedinLogin = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_BACK_URL || 'http://localhost:5000'}/api/auth/linkedin`;
+  };
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white dark:bg-slate-900">
       {/* Left Side - Illustration */}
@@ -116,10 +124,18 @@ const LoginPage = () => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <button className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition font-medium text-slate-700 dark:text-slate-300">
+            <button
+              onClick={handleGoogleLogin}
+              type="button"
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition font-medium text-slate-700 dark:text-slate-300"
+            >
               <FcGoogle className="text-xl" /> Google
             </button>
-            <button className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition font-medium text-slate-700 dark:text-slate-300">
+            <button
+              onClick={handleLinkedinLogin}
+              type="button"
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition font-medium text-slate-700 dark:text-slate-300"
+            >
               <FaLinkedin className="text-xl text-[#0077b5]" /> LinkedIn
             </button>
           </div>

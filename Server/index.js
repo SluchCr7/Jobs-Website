@@ -17,6 +17,7 @@ app.use(cors({
 }));
 app.use(helmet())
 app.use(express.json());
+app.use(passport.initialize());
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 })

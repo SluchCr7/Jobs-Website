@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { useState } from "react";
 import { FaEnvelope, FaLock, FaUser, FaBriefcase, FaArrowLeft, FaCheck } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { FaLinkedin } from "react-icons/fa";
 import Link from 'next/link';
 
 type Role = "job_seeker" | "employer";
@@ -35,6 +37,14 @@ export default function RegisterPage() {
   const next = () => setStep((s) => Math.min(s + 1, steps.length - 1));
   const back = () => setStep((s) => Math.max(s - 1, 0));
 
+  const handleGoogleSignup = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_BACK_URL || 'http://localhost:5000'}/api/auth/google`;
+  };
+
+  const handleLinkedinSignup = () => {
+    window.location.href = `${process.env.NEXT_PUBLIC_BACK_URL || 'http://localhost:5000'}/api/auth/linkedin`;
+  };
+
   const handleSignup = async () => {
     try {
       await register({
@@ -59,6 +69,21 @@ export default function RegisterPage() {
             <p className="text-slate-500">
               Already have an account? <Link href="/Pages/Login" className="text-primary-600 font-semibold hover:underline">Log in</Link>
             </p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            <button
+              onClick={handleGoogleSignup}
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition font-medium text-slate-700 dark:text-slate-300"
+            >
+              <FcGoogle className="text-xl" /> Google
+            </button>
+            <button
+              onClick={handleLinkedinSignup}
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition font-medium text-slate-700 dark:text-slate-300"
+            >
+              <FaLinkedin className="text-xl text-[#0077b5]" /> LinkedIn
+            </button>
           </div>
 
           {/* Progress Stepper */}

@@ -10,6 +10,15 @@ const userSchema = new mongoose.Schema(
       maxlength: 50,
     },
 
+    provider: {
+      type: String,
+      enum: ["local", "google", "linkedin"],
+      default: "local",
+    },
+    providerId: {
+      type: String,
+    },
+
     email: {
       type: String,
       required: true,
@@ -20,7 +29,9 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.provider === "local";
+      },
       minlength: 6,
       select: false, // مهم للأمان
     },

@@ -80,5 +80,17 @@ const signUp = asyncHandler(async (req, res) => {
   });
 })
 
+const oauthCallback = (req, res) => {
+  const user = req.user;
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.TOKEN_SECRET,
+    { expiresIn: "7d" }
+  );
 
-module.exports = { signUp, login }
+  const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
+  res.redirect(`${clientUrl}/oauth-success?token=${token}`);
+};
+
+
+module.exports = { signUp, login, oauthCallback }
