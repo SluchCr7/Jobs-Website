@@ -27,6 +27,7 @@ export interface User {
 
 interface AuthContextType {
     user: User | null;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
     loading: boolean;
     hasCompany: boolean; // Helper to check if user has a company
     register: (data: any) => Promise<void>;
@@ -197,7 +198,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const hasCompany = user?.company ? true : false;
 
     return (
-        <AuthContext.Provider value={{ user, loading, hasCompany, login, register, logout, updateProfile, updateAvatar, oauthLogin }}>
+        <AuthContext.Provider value={{ user, setUser, loading, hasCompany, login, register, logout, updateProfile, updateAvatar, oauthLogin }}>
             {children}
         </AuthContext.Provider>
     );
