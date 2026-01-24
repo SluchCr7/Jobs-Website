@@ -11,19 +11,59 @@ import {
   FaShareAlt,
   FaHeart
 } from "react-icons/fa";
-import { MdWork } from "react-icons/md";
+import { MdWork, MdCategory, MdAccessTime } from "react-icons/md";
+import { useAuth } from "@/app/Context/AuthContext"; // Import AuthContext
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { jobs, categories } from "@/app/utils/Data";
+import { useJobs } from "@/app/Context/JobContext";
 import ApplyJobModal from "@/app/Components/ApplyModel";
 import { JobsData } from "@/app/utils/Types";
 
 export default function JobDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const id = Number(params?.id);
+  // Using string for ID as backend uses MongoDB _id
+  const id = params?.id as string;
+  const { currentJob, fetchJobById, loading, saveJob } = useJobs();
+  const { user } = useAuth(); // Get user to check saved status
   const [showModal, setShowModal] = React.useState(false);
-  const selectedJob: JobsData | undefined = jobs.find((job) => job.id === id);
+  const [isSaved, setIsSaved] = React.useState(false);
+
+  React.useEffect(() => {
+    if (id) {
+      fetchJobById(id);
+    }
+  }, [id, fetchJobById]);
+
+  React.useEffect(() => {
+    // Check if current job is saved by user
+    if (user && user.savedJobs && currentJob) {
+      const isJobSaved = user.savedJobs.some((savedId: any) => savedId.toString() === currentJob._id);
+      setIsSaved(isJobSaved);
+    }
+  }, [user, currentJob]);
+
+  const handleSave = async () => {
+    if (!currentJob) return;
+    await saveJob(currentJob._id);
+    // Note: context update handles state, but local toggle gives instant feedback
+    setIsSaved(!isSaved);
+  };
+
+  // Loading State
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 animate-pulse">Loading Job Details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Use currentJob from context
+  const selectedJob = currentJob;
 
   if (!selectedJob) {
     return (
@@ -40,7 +80,8 @@ export default function JobDetailPage() {
     selectedJob.description ||
     "This role is an exciting opportunity to join a dynamic team and make an impact. We are looking for passionate individuals who are ready to take on challenges and grow their careers.";
 
-  const categoryName = categories.find(c => c.id === selectedJob.categoryId)?.name || 'General';
+  // Handle categories if available or default
+  const categoryName = selectedJob.category?.name || 'General';
 
   const qualifications = [
     "Bachelor's degree in a related field or equivalent practical experience",
@@ -58,7 +99,10 @@ export default function JobDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-20 font-sans transition-colors">
-      <div className="container-custom">
+      {/* Premium Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary-50/50 to-transparent dark:from-primary-900/10 dark:to-transparent pointer-events-none" />
+
+      <div className="container-custom relative z-10">
 
         {/* Breadcrumb & Navigation */}
         <div className="flex items-center justify-between mb-8">
@@ -117,6 +161,10 @@ export default function JobDetailPage() {
                   <MdWork className="text-amber-500" />
                   <span>{selectedJob.employmentType}</span>
                 </div>
+                <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
+                  <MdCategory className="text-purple-500" />
+                  <span>{categoryName}</span>
+                </div>
               </div>
             </div>
 
@@ -128,8 +176,11 @@ export default function JobDetailPage() {
                 Apply Now
               </button>
               <div className="flex gap-3">
-                <button className="p-3 rounded-xl border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 transition">
-                  <FaHeart />
+                <button
+                  onClick={handleSave}
+                  className={`p-3 rounded-xl border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition ${isSaved ? 'text-red-500 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900' : 'text-slate-500'}`}
+                >
+                  <FaHeart className={isSaved ? "fill-current" : ""} />
                 </button>
                 <button className="p-3 rounded-xl border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 transition">
                   <FaShareAlt />
@@ -187,7 +238,7 @@ export default function JobDetailPage() {
             <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
               <h3 className="font-bold text-slate-900 dark:text-white mb-4">Required Skills</h3>
               <div className="flex flex-wrap gap-2">
-                {selectedJob.skills.map(skill => (
+                {selectedJob.skills?.map((skill: any) => (
                   <span key={skill} className="px-3 py-1 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 text-sm font-medium rounded-lg">
                     {skill}
                   </span>

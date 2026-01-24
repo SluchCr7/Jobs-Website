@@ -7,6 +7,7 @@ const {
   deleteJob,
   changeJobStatus,
   getAllJobsByCompany
+  , toggleSaveJob
 } = require("../Controllers/JobController");
 
 const {
@@ -23,5 +24,5 @@ router.post("/", protect, isEmployerWithCompany, createJob);
 router.put("/:id", protect, adminOrSameUser, updateJob);
 router.delete("/:id", protect, adminOrSameUser, deleteJob);
 router.patch("/:id/status", protect, adminOrSameUser, changeJobStatus);
-
+router.put("/:id/save", protect, toggleSaveJob);
 module.exports = router;

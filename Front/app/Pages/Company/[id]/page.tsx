@@ -19,25 +19,52 @@ import {
   FiActivity,
   FiBriefcase
 } from 'react-icons/fi';
-import { companies, jobs } from '@/app/utils/Data';
-import { Company, JobsData } from '@/app/utils/Types';
+import { useCompanies } from '@/app/Context/CompanyContext';
+import { useJobs } from '@/app/Context/JobContext'; // Assuming context exposes helper or we filter manually
 import JobCard from '@/app/Components/JobCard';
 
 const CompanyDetailPage = () => {
   const params = useParams();
   const router = useRouter();
-  const id = Number(params?.id);
+  // Using string for ID since backend uses _id
+  const id = params?.id as string;
   const [activeTab, setActiveTab] = useState<'overview' | 'jobs' | 'culture'>('overview');
 
-  const company: Company | undefined = companies.find(c => c.id === id);
+  const { currentCompany, fetchCompanyById, loading: companyLoading } = useCompanies();
+  const { jobs: allJobs, fetchJobs, loading: jobsLoading } = useJobs();
+
+  React.useEffect(() => {
+    if (id) {
+      fetchCompanyById(id);
+      fetchJobs(); // Or fetch specific company jobs if endpoint exists
+    }
+  }, [id, fetchCompanyById, fetchJobs]);
+
+  const company = currentCompany;
 
   const companyJobs = useMemo(() => {
-    if (!company) return [];
-    return jobs.filter(j => {
-      const jobCompanyName = typeof j.company === 'string' ? j.company : j.company.name;
-      return jobCompanyName.toLowerCase() === company.name.toLowerCase();
+    if (!company || !allJobs) return [];
+    return allJobs.filter(j => {
+      // Handle object or string comparison for company reference in job
+      const jobCompanyId = typeof j.company === 'string' ? j.company : j.company?._id || j.company?.id;
+      const currentId = company._id || company.id;
+      // Also check name match as fallback if needed
+      const jobCompanyName = typeof j.company === 'string' ? '' : j.company?.name;
+
+      return jobCompanyId === currentId || jobCompanyName === company.name;
     });
-  }, [company]);
+  }, [company, allJobs]);
+
+  if (companyLoading && !company) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 animate-pulse">Loading Company Profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!company) {
     return (
@@ -122,7 +149,7 @@ const CompanyDetailPage = () => {
                 <Image
                   width={200}
                   height={200}
-                  src={company.logoUrl}
+                  src={company.logo?.url || company.logoUrl || '/placeholder-logo.png'}
                   alt={company.name}
                   className="w-full h-full object-contain"
                 />

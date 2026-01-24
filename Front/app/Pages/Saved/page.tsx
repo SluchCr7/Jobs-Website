@@ -1,26 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
-import { jobs } from '@/app/utils/Data';
+import React, { useState, useMemo } from 'react';
+import { useAuth } from '@/app/Context/AuthContext';
+import { useJobs } from '@/app/Context/JobContext';
 import { FaHeart, FaMapMarkerAlt, FaMoneyBillWave } from 'react-icons/fa';
 import { FiSearch, FiBriefcase } from 'react-icons/fi';
 import Link from 'next/link';
 
 export default function SavedJobsPage() {
-  const [savedJobs, setSavedJobs] = useState(jobs);
+  const { user } = useAuth();
+  const { jobs: allJobs, saveJob, loading } = useJobs();
   const [search, setSearch] = useState("");
 
-  const removeJob = (id: number) => {
-    setSavedJobs(prev => prev.filter(job => job.id !== id));
-  };
+  const savedJobs = useMemo(() => {
+    if (!user || !user.savedJobs || !allJobs) return [];
+    return allJobs.filter(job =>
+      user.savedJobs?.includes(job._id || job.id.toString())
+    );
+  }, [user, allJobs]);
 
   const filteredJobs = savedJobs.filter(job => {
-    const companyName = typeof job.company === 'string' ? job.company : job.company.name;
+    const companyName = typeof job.company === 'string' ? job.company : job.company?.name || "";
     return (
       job.title.toLowerCase().includes(search.toLowerCase()) ||
       companyName.toLowerCase().includes(search.toLowerCase())
     );
   });
+
+  if (loading && allJobs.length === 0) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 animate-pulse">Loading Saved Jobs...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors pt-24 pb-12 font-sans">
@@ -79,32 +95,33 @@ export default function SavedJobsPage() {
           )}
 
           {filteredJobs.map((job, idx) => {
-            const companyName = typeof job.company === 'string' ? job.company : job.company.name;
+            const companyName = typeof job.company === 'string' ? job.company : job.company?.name || "Unknown Company";
             const logoUrl = typeof job.logo === 'string'
               ? job.logo
-              : (typeof job.company !== 'string' ? job.company.logo?.url || job.company.logoUrl : undefined);
+              : (typeof job.company !== 'string' ? job.company?.logo?.url || job.company?.logoUrl : undefined);
+            const jobId = job._id || job.id;
 
             return (
               <div
-                key={job.id}
+                key={jobId}
                 className="relative bg-white dark:bg-slate-800 rounded-2xl p-6 flex flex-col md:flex-row justify-between gap-6 shadow-sm hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-300 group animate-slide-up"
                 style={{ animationDelay: `${idx * 0.05}s` }}
               >
                 <div className="absolute top-4 right-4">
                   <button
-                    onClick={() => removeJob(job.id)}
+                    onClick={() => saveJob(jobId)}
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors tooltip"
                     title="Remove from Saved"
                   >
-                    <FaHeart size={18} />
+                    <FaHeart size={18} className="fill-current" />
                   </button>
                 </div>
 
                 {/* Left section */}
                 <div className="flex gap-5">
                   {/* Logo */}
-                  <div className="w-16 h-16 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 font-bold text-xl shrink-0">
-                    {logoUrl ? <img src={logoUrl} alt={companyName} className="w-10 h-10 object-contain" /> : companyName.charAt(0)}
+                  <div className="w-16 h-16 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 flex items-center justify-center text-slate-400 font-bold text-xl shrink-0 overflow-hidden">
+                    {logoUrl ? <img src={logoUrl} alt={companyName} className="w-full h-full object-contain" /> : companyName.charAt(0)}
                   </div>
 
                   <div>
@@ -125,7 +142,7 @@ export default function SavedJobsPage() {
 
                     {/* Skills */}
                     <div className="flex flex-wrap gap-2 mt-4">
-                      {job.skills.slice(0, 4).map(skill => (
+                      {job.skills?.slice(0, 4).map((skill: string) => (
                         <span
                           key={skill}
                           className="px-2.5 py-1 text-xs rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium"
@@ -139,7 +156,7 @@ export default function SavedJobsPage() {
 
                 {/* Right buttons */}
                 <div className="flex flex-row md:flex-col justify-end gap-3 mt-4 md:mt-0 w-full md:w-auto">
-                  <Link href={`/Pages/Job/${job.id}`} className="px-6 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium text-center whitespace-nowrap">
+                  <Link href={`/Pages/Job/${jobId}`} className="px-6 py-2.5 border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium text-center whitespace-nowrap">
                     View Details
                   </Link>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { companies } from "@/app/utils/Data";
+import { useCompanies } from "@/app/Context/CompanyContext"; // Use context
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
@@ -23,6 +23,19 @@ const itemVariants = {
 };
 
 const CompaniesListingPage = () => {
+  const { companies, loading } = useCompanies();
+
+  if (loading && companies.length === 0) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 animate-pulse">Loading Companies...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full min-h-screen flex flex-col items-center py-24 px-4 md:px-8 bg-slate-50 dark:bg-slate-900 transition-colors">
 
@@ -75,7 +88,7 @@ const CompaniesListingPage = () => {
               <div className="flex items-center gap-5">
                 <div className="w-20 h-20 relative bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-4 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-600 group-hover:scale-105 transition-transform duration-500">
                   <Image
-                    src={company.logoUrl}
+                    src={company.logo?.url || company.logoUrl || '/placeholder-logo.png'}
                     alt={company.name}
                     fill
                     className="object-contain p-2"
@@ -106,7 +119,7 @@ const CompaniesListingPage = () => {
               </div>
 
               <Link
-                href={`/Pages/Company/${company.id}`}
+                href={`/Pages/Company/${company._id || company.id}`} // Handle both ID types
                 className="btn-primary !px-5 !py-2 !text-sm flex items-center gap-2 group-hover:shadow-primary-500/20"
               >
                 View Profile

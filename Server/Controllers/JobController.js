@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const { Job } = require("../Modules/Job");
+const {User} = require("../Modules/User")
 
 /**
  * @desc    Create new job
@@ -184,6 +185,29 @@ const getAllJobsByCompany = async (req, res) => {
   const jobs = await Job.find({ company: req.params.id }).sort({ createdAt: -1 });
   res.status(200).json({ jobs });
 };
+const toggleSaveJob = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  const job = await Job.findById(req.params.id);
+
+  if (!job) {
+    return res.status(404).json({ message: "Job is not found" });
+  }
+
+  const jobIdStr = job._id.toString();
+  const savedJobsStr = user.savedJobs.map(id => id.toString());
+
+  if (savedJobsStr.includes(jobIdStr)) {
+    // Job موجود مسبقًا → نحذفه
+    user.savedJobs = user.savedJobs.filter(id => id.toString() !== jobIdStr);
+    await user.save();
+    return res.status(200).json({ message: "Job removed from saved jobs", savedJobs: user.savedJobs });
+  } else {
+    // Job غير موجود → نضيفه
+    user.savedJobs.push(job._id);
+    await user.save();
+    return res.status(200).json({ message: "Job saved successfully", savedJobs: user.savedJobs });
+  }
+});
 
 module.exports = {
   createJob,
@@ -192,5 +216,6 @@ module.exports = {
   updateJob,
   deleteJob,
   changeJobStatus,
-  getAllJobsByCompany
+  getAllJobsByCompany,
+  toggleSaveJob
 };

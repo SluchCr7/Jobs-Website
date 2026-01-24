@@ -5,6 +5,7 @@ import API from "../utils/axios";
 import { jobs as mockJobs, featuredJobs as mockFeatured } from "../utils/Data";
 import { JobsData, Job } from "../utils/Types";
 import { toast } from "sonner";
+import { useAuth } from "./AuthContext";
 
 // Extend or use existing types. 
 // Backend Job has _id. Frontend uses id (number). We will need to be careful.
@@ -22,6 +23,7 @@ interface JobContextType {
     updateJob: (id: string, jobData: any) => Promise<void>;
     deleteJob: (id: string) => Promise<void>;
     getJobsByCompany: (companyId: string) => Promise<void>;
+    saveJob: (id: string | number) => Promise<void>;
 }
 
 const JobContext = createContext<JobContextType | undefined>(undefined);
@@ -32,6 +34,7 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
     const [currentJob, setCurrentJob] = useState<any | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const { user, setUser } = useAuth(); // Access auth to update savedJobs locally
 
     const fetchJobs = useCallback(async (filters: any = {}) => {
         setLoading(true);
@@ -139,6 +142,35 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }
 
+    const saveJob = async (id: string | number) => {
+        if (!user) {
+            toast.error("Please login to save jobs");
+            return;
+        }
+        try {
+            const response = await API.put(`/job/${id}/save`);
+            // Backend returns { message, savedJobs } (array of IDs)
+            const updatedSavedJobs = response.data.savedJobs;
+
+            // We need to update the user context with the new saved jobs list
+            // Assuming the user object has a savedJobs property
+            if (user) {
+                // We might need to handle if savedJobs is array of strings or objects. 
+                // Backend User.savedJobs is Ref to Job. 
+                // Front-end user interface 'savedJobs' might need to be added to User type in AuthContext first? 
+                // Yes, let's assume we maintain consistency.
+                const newUser = { ...user, savedJobs: updatedSavedJobs };
+                setUser(newUser);
+                localStorage.setItem("user", JSON.stringify(newUser));
+            }
+
+            toast.success(response.data.message);
+        } catch (err: any) {
+            console.error("Failed to save job", err);
+            toast.error(err.response?.data?.message || "Failed to save job");
+        }
+    };
+
     // Initial fetch
     useEffect(() => {
         fetchJobs();
@@ -158,7 +190,8 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
                 createJob,
                 updateJob,
                 deleteJob,
-                getJobsByCompany
+                getJobsByCompany,
+                saveJob
             }}
         >
             {children}

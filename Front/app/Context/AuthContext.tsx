@@ -22,6 +22,7 @@ export interface User {
     createdAt?: string;
     updatedAt?: string;
     token?: string; // Token is appended on login
+    savedJobs?: string[]; // Array of Job IDs
 }
 
 interface AuthContextType {

@@ -101,4 +101,6 @@ const deleteUser = asyncHandler(async(req,res)=>{
     }
 })
 
+
+
 module.exports = {deleteUser,getUserById,getAllUsers,updateUserProfile,getUserProfile , updateUserAvatar}
