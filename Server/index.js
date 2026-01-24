@@ -6,7 +6,7 @@ const app = express()
 const path = require("path")
 const cors = require("cors")
 const helmet = require("helmet")
-const passport = require("passport")
+const passport = require("./config/passport")
 // DB 
 
 connectDB()
