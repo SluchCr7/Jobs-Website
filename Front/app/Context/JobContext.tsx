@@ -66,7 +66,7 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
         setFeaturedJobs(mockFeatured);
     }, []);
 
-    const fetchJobById = async (id: string) => {
+    const fetchJobById = useCallback(async (id: string) => {
         setLoading(true);
         try {
             const response = await API.get(`/job/${id}`);
@@ -85,9 +85,9 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [mockJobs]);
 
-    const createJob = async (jobData: any) => {
+    const createJob = useCallback(async (jobData: any) => {
         setLoading(true);
         try {
             await API.post("/job", jobData);
@@ -99,9 +99,9 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchJobs]);
 
-    const updateJob = async (id: string, jobData: any) => {
+    const updateJob = useCallback(async (id: string, jobData: any) => {
         setLoading(true);
         try {
             await API.put(`/job/${id}`, jobData);
@@ -114,9 +114,9 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentJob?._id, fetchJobById, fetchJobs]);
 
-    const deleteJob = async (id: string) => {
+    const deleteJob = useCallback(async (id: string) => {
         setLoading(true);
         try {
             await API.delete(`/job/${id}`);
@@ -127,9 +127,9 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [fetchJobs]);
 
-    const getJobsByCompany = async (companyId: string) => {
+    const getJobsByCompany = useCallback(async (companyId: string) => {
         setLoading(true);
         try {
             const res = await API.get(`/job/company/${companyId}`);
@@ -140,9 +140,9 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    }
+    }, []);
 
-    const saveJob = async (id: string | number) => {
+    const saveJob = useCallback(async (id: string | number) => {
         if (!user) {
             toast.error("Please login to save jobs");
             return;
@@ -153,12 +153,7 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
             const updatedSavedJobs = response.data.savedJobs;
 
             // We need to update the user context with the new saved jobs list
-            // Assuming the user object has a savedJobs property
-            if (user) {
-                // We might need to handle if savedJobs is array of strings or objects. 
-                // Backend User.savedJobs is Ref to Job. 
-                // Front-end user interface 'savedJobs' might need to be added to User type in AuthContext first? 
-                // Yes, let's assume we maintain consistency.
+            if (user && setUser) {
                 const newUser = { ...user, savedJobs: updatedSavedJobs };
                 setUser(newUser);
                 localStorage.setItem("user", JSON.stringify(newUser));
@@ -169,7 +164,7 @@ export const JobProvider = ({ children }: { children: React.ReactNode }) => {
             console.error("Failed to save job", err);
             toast.error(err.response?.data?.message || "Failed to save job");
         }
-    };
+    }, [user, setUser]);
 
     // Initial fetch
     useEffect(() => {
