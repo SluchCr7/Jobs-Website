@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, Suspense } from 'react'
 import Link from 'next/link'
 import { useParams, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -16,7 +16,7 @@ import { useCompanies } from '../Context/CompanyContext'
 import { useApplications } from '../Context/ApplicationContext'
 import { useJobs } from '../Context/JobContext'
 
-export default function CompanyDashboard() {
+function DashboardContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('overview')
   const [showNotifications, setShowNotifications] = useState(false)
@@ -604,5 +604,20 @@ export default function CompanyDashboard() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function CompanyDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">Loading Dashboard...</p>
+        </div>
+      </div>
+    }>
+      <DashboardContent />
+    </Suspense>
   )
 }
