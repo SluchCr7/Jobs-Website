@@ -10,13 +10,21 @@ interface JobCardProps {
     variant?: 'grid' | 'list';
 }
 
+import { useAuth } from '../Context/AuthContext';
+
 export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
+    const { user } = useAuth();
     const isList = variant === 'list';
     const companyName = typeof job.company === 'string' ? job.company : job.company?.name || 'Unknown Company';
     const companyLogo = typeof job.company === 'object' && job.company?.logo?.url
         ? job.company.logo.url
         : (job.logo || (typeof job.company === 'object' ? job.company.logoUrl : '') || '');
     const jobId = job._id || job.id;
+
+    // Ownership check
+    const jobCompanyId = typeof job.company === 'string' ? job.company : job.company?._id || job.company?.id;
+    const userCompanyId = typeof user?.company === 'string' ? user?.company : user?.company?._id || user?.company?.id;
+    const isMyCompany = user && (userCompanyId === jobCompanyId || user._id === job.createdBy);
 
     return (
         <motion.article
@@ -110,10 +118,12 @@ export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
                 >
                     View Details
                 </Link>
-                <button className="flex-1 btn-primary py-2.5 text-sm flex items-center justify-center gap-2 group/btn">
-                    Apply
-                    <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
-                </button>
+                {!isMyCompany && (
+                    <button className="flex-1 btn-primary py-2.5 text-sm flex items-center justify-center gap-2 group/btn">
+                        Apply
+                        <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                    </button>
+                )}
             </div>
         </motion.article>
     );

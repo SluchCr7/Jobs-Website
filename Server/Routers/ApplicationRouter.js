@@ -2,6 +2,7 @@ const {
     applyToJob,
     getMyApplications,
     getJobApplications,
+    getCompanyApplications,
     updateApplicationStatus,
     deleteApplication,
 } = require("../Controllers/ApplicationController");
@@ -19,8 +20,12 @@ route.route("/my-applications")
     .get(protect, getMyApplications)
 route.route("/job/:id/applications")
     .get(protect, getJobApplications)
+route.route("/company/:companyId/applications")
+    .get(protect, getCompanyApplications)
 route.route("/update")
-    .put(protect, adminOrSameUser, updateApplicationStatus)
+    .put(protect, updateApplicationStatus)
+route.route("/update/:id")
+    .put(protect, updateApplicationStatus)
 route.route("/delete/:id")
-    .delete(protect, adminOrSameUser, deleteApplication)
+    .delete(protect, deleteApplication)
 module.exports = route

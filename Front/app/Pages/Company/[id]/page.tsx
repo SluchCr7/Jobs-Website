@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuth } from '@/app/Context/AuthContext';
 import {
   FiMapPin,
   FiGlobe,
@@ -17,18 +18,23 @@ import {
   FiHeart,
   FiStar,
   FiActivity,
-  FiBriefcase
+  FiBriefcase,
+  FiEdit,
+  FiList
 } from 'react-icons/fi';
 import { useCompanies } from '@/app/Context/CompanyContext';
 import { useJobs } from '@/app/Context/JobContext'; // Assuming context exposes helper or we filter manually
 import JobCard from '@/app/Components/JobCard';
+import EditCompanyModal from '@/app/Components/EditCompanyModal';
 
 const CompanyDetailPage = () => {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   // Using string for ID since backend uses _id
   const id = params?.id as string;
   const [activeTab, setActiveTab] = useState<'overview' | 'jobs' | 'culture'>('overview');
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const { currentCompany, fetchCompanyById, loading: companyLoading } = useCompanies();
   const { jobs: allJobs, fetchJobs, loading: jobsLoading } = useJobs();
@@ -41,6 +47,15 @@ const CompanyDetailPage = () => {
   }, [id, fetchCompanyById, fetchJobs]);
 
   const company = currentCompany;
+
+  // Ownership check
+  const isOwner = useMemo(() => {
+    if (!user || !company) return false;
+    // Check if user is employer and owns this company
+    const userCompanyId = typeof user.company === 'string' ? user.company : user.company?._id || user.company?.id;
+    const companyId = company._id || company.id;
+    return user.role === 'employer' && userCompanyId === companyId;
+  }, [user, company]);
 
   const companyJobs = useMemo(() => {
     if (!company || !allJobs) return [];
@@ -181,11 +196,30 @@ const CompanyDetailPage = () => {
                 </div>
               </div>
 
-              <div className="flex gap-3 w-full md:w-auto">
-                <button className="flex-1 md:flex-none btn-primary px-8 py-3 shadow-lg shadow-primary-500/20">Follow</button>
-                <button className="p-3 rounded-2xl border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 transition group">
-                  <FiShare2 className="group-hover:scale-110 transition-transform" />
-                </button>
+              <div className="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+                {isOwner ? (
+                  <>
+                    <button
+                      onClick={() => setShowEditModal(true)}
+                      className="flex-1 md:flex-none btn-outline px-6 py-3 flex items-center justify-center gap-2"
+                    >
+                      <FiEdit /> Edit Profile
+                    </button>
+                    <Link
+                      href={`/Dashboard?company=${company._id}`}
+                      className="flex-1 md:flex-none btn-primary px-6 py-3 flex items-center justify-center gap-2 whitespace-nowrap"
+                    >
+                      <FiList /> View Applications
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <button className="flex-1 md:flex-none btn-primary px-8 py-3 shadow-lg shadow-primary-500/20">Follow</button>
+                    <button className="p-3 rounded-2xl border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 transition group">
+                      <FiShare2 className="group-hover:scale-110 transition-transform" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
@@ -213,6 +247,14 @@ const CompanyDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      <EditCompanyModal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        company={company}
+      />
+
 
       {/* Main Content Area */}
       <div className="container-custom mt-8">

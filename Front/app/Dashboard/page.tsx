@@ -1,27 +1,55 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
+import { useParams, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Bell, Briefcase, Users, BarChart3, Settings, CreditCard, MessageSquare,
   Shield, Star, Menu, Search, Plus, TrendingUp, TrendingDown, Eye, Edit,
   Trash2, MoreVertical, Download, Filter, Calendar, DollarSign, Clock,
   Target, Award, Zap, Activity, ArrowUpRight, ArrowDownRight, X, ChevronDown,
-  Building2, MapPin, Globe, Mail, Phone
+  Building2, MapPin, Globe, Mail, Phone, ExternalLink, FileText
 } from 'lucide-react'
+import { useAuth } from '../Context/AuthContext'
+import { useCompanies } from '../Context/CompanyContext'
+import { useApplications } from '../Context/ApplicationContext'
+import { useJobs } from '../Context/JobContext'
 
 export default function CompanyDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('overview')
   const [showNotifications, setShowNotifications] = useState(false)
 
-  // Mock Data
+  const { user } = useAuth()
+  const { currentCompany, fetchCompanyById } = useCompanies()
+  const { companyApplications, fetchCompanyApplications, updateApplicationStatus, loading: appsLoading } = useApplications()
+  const { jobs: allJobs, fetchJobs, deleteJob } = useJobs()
+
+  const searchParams = useSearchParams()
+  const companyId = searchParams.get('company') || (user?.company?._id || user?.company)
+
+  useEffect(() => {
+    if (companyId) {
+      fetchCompanyById(companyId)
+      fetchCompanyApplications(companyId)
+      fetchJobs()
+    }
+  }, [companyId])
+
+  const companyJobs = useMemo(() => {
+    return allJobs.filter(j => {
+      const jId = typeof j.company === 'string' ? j.company : j.company?._id;
+      return jId === companyId;
+    })
+  }, [allJobs, companyId])
+
+  // Real Stats
   const stats = [
     {
       label: 'Active Jobs',
-      value: '24',
-      change: '+12%',
+      value: companyJobs.length.toString(),
+      change: '+0%',
       trend: 'up',
       icon: Briefcase,
       color: 'from-blue-500 to-cyan-500',
@@ -29,27 +57,27 @@ export default function CompanyDashboard() {
     },
     {
       label: 'Total Applications',
-      value: '1,847',
-      change: '+23%',
+      value: companyApplications.length.toString(),
+      change: '+0%',
       trend: 'up',
       icon: Users,
       color: 'from-purple-500 to-pink-500',
       bgColor: 'bg-purple-50 dark:bg-purple-900/20'
     },
     {
-      label: 'Hired This Month',
-      value: '86',
-      change: '+8%',
+      label: 'New Applications',
+      value: companyApplications.filter(a => a.status === 'pending').length.toString(),
+      change: '+0%',
       trend: 'up',
-      icon: Award,
+      icon: Activity,
       color: 'from-emerald-500 to-teal-500',
       bgColor: 'bg-emerald-50 dark:bg-emerald-900/20'
     },
     {
-      label: 'Conversion Rate',
-      value: '6.8%',
-      change: '-0.3%',
-      trend: 'down',
+      label: 'Interviews',
+      value: companyApplications.filter(a => a.status === 'accepted' || a.status === 'reviewed').length.toString(),
+      change: '+0%',
+      trend: 'up',
       icon: Target,
       color: 'from-orange-500 to-red-500',
       bgColor: 'bg-orange-50 dark:bg-orange-900/20'
@@ -119,8 +147,8 @@ export default function CompanyDashboard() {
               key={item.id}
               onClick={() => setSelectedTab(item.id)}
               className={`w-full flex items-center justify-between gap-3 px-5 py-4 rounded-2xl font-semibold transition-all duration-300 ${selectedTab === item.id
-                  ? 'gradient-primary text-white shadow-xl shadow-primary-500/30 scale-105'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:scale-105'
+                ? 'gradient-primary text-white shadow-xl shadow-primary-500/30 scale-105'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:scale-105'
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -129,8 +157,8 @@ export default function CompanyDashboard() {
               </div>
               {item.badge && (
                 <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${selectedTab === item.id
-                    ? 'bg-white/20 text-white'
-                    : 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400'
                   }`}>
                   {item.badge}
                 </span>
@@ -190,8 +218,8 @@ export default function CompanyDashboard() {
                     key={item.id}
                     onClick={() => { setSelectedTab(item.id); setSidebarOpen(false); }}
                     className={`w-full flex items-center justify-between gap-3 px-5 py-4 rounded-2xl font-semibold transition-all ${selectedTab === item.id
-                        ? 'gradient-primary text-white shadow-xl'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800'
+                      ? 'gradient-primary text-white shadow-xl'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800'
                       }`}
                   >
                     <div className="flex items-center gap-3">
@@ -322,8 +350,8 @@ export default function CompanyDashboard() {
                     <stat.icon className={`w-6 h-6 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`} style={{ WebkitTextFillColor: 'transparent' }} />
                   </div>
                   <div className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${stat.trend === 'up'
-                      ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-                      : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                    ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
                     }`}>
                     {stat.trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                     {stat.change}
@@ -361,9 +389,9 @@ export default function CompanyDashboard() {
                     </tr>
                   </thead>
                   <tbody className="text-sm">
-                    {recentJobs.map((job, i) => (
+                    {companyJobs.map((job, i) => (
                       <motion.tr
-                        key={job.id}
+                        key={job._id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.1 }}
@@ -374,89 +402,121 @@ export default function CompanyDashboard() {
                             <p className="font-bold text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                               {job.title}
                             </p>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Posted {job.posted}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Posted {new Date(job.createdAt).toLocaleDateString()}</p>
                           </div>
                         </td>
                         <td className="py-5">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${job.status === 'active'
-                              ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                              : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${job.status === 'open'
+                            ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                            : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
                             }`}>
-                            {job.status === 'active' ? '● Active' : '⏸ Paused'}
+                            {job.status === 'open' ? '● Active' : '⏸ Closed'}
                           </span>
                         </td>
                         <td className="py-5">
                           <div className="flex items-center gap-2">
                             <Users className="w-4 h-4 text-slate-400" />
-                            <span className="font-bold text-slate-900 dark:text-white">{job.applications}</span>
+                            <span className="font-bold text-slate-900 dark:text-white">
+                              {companyApplications.filter(a => a.job?._id === job._id).length}
+                            </span>
                           </div>
                         </td>
                         <td className="py-5">
                           <div className="flex items-center gap-2">
                             <Eye className="w-4 h-4 text-slate-400" />
-                            <span className="font-semibold text-slate-600 dark:text-slate-400">{job.views}</span>
+                            <span className="font-semibold text-slate-600 dark:text-slate-400">0</span>
                           </div>
                         </td>
                         <td className="py-5 pr-2">
                           <div className="flex items-center justify-end gap-2">
-                            <button className="p-2 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 transition-colors">
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button className="p-2 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
-                              <MoreVertical className="w-4 h-4" />
+                            <Link href={`/Pages/Job/${job._id}`} className="p-2 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 transition-colors">
+                              <ExternalLink className="w-4 h-4" />
+                            </Link>
+                            <button
+                              onClick={() => deleteJob(job._id)}
+                              className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
                       </motion.tr>
                     ))}
+                    {companyJobs.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="py-10 text-center text-slate-500 italic">No jobs posted yet.</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
 
-            {/* Recent Messages */}
-            <div className="card-premium p-6">
+            {/* Recent Candidates / Applications */}
+            <div className="card-premium p-6 overflow-hidden">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-xl font-black text-slate-900 dark:text-white mb-1">Messages</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Recent candidate messages</p>
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white mb-1">New Applications</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Review recent candidate submissions</p>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold">
-                  2 New
+                <span className="px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-xs font-bold">
+                  {companyApplications.filter(a => a.status === 'pending').length} New
                 </span>
               </div>
 
-              <div className="space-y-3">
-                {recentMessages.map((msg, i) => (
+              <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-2">
+                {companyApplications.map((app, i) => (
                   <motion.div
-                    key={msg.id}
+                    key={app._id}
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className={`p-4 rounded-2xl cursor-pointer transition-all hover:scale-105 ${msg.unread
-                        ? 'bg-primary-50 dark:bg-primary-900/20 border-2 border-primary-200 dark:border-primary-800'
-                        : 'bg-slate-50 dark:bg-slate-800/50 border-2 border-transparent'
+                    className={`p-4 rounded-2xl border-2 transition-all hover:shadow-lg ${app.status === 'pending'
+                      ? 'bg-white dark:bg-slate-800 border-primary-200 dark:border-primary-800/50'
+                      : 'bg-slate-50/50 dark:bg-slate-900/30 border-transparent'
                       }`}
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-xl gradient-accent flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                        {msg.avatar}
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-inner shrink-0">
+                        {app.applicant?.name?.charAt(0) || 'U'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="font-bold text-sm text-slate-900 dark:text-white truncate">{msg.name}</p>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0 ml-2">{msg.time}</span>
+                          <p className="font-bold text-slate-900 dark:text-white truncate">{app.applicant?.name}</p>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase">{new Date(app.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">{msg.message}</p>
+                        <p className="text-xs text-primary-600 dark:text-primary-400 font-bold mb-3 truncate">{app.job?.title}</p>
+
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={app.resume}
+                            target="_blank"
+                            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 bg-slate-100 dark:bg-slate-700 rounded-lg text-[10px] font-bold text-slate-600 dark:text-slate-300 hover:bg-primary-600 hover:text-white transition-all shadow-sm"
+                          >
+                            <FileText size={14} /> Resume
+                          </a>
+                          <select
+                            value={app.status}
+                            onChange={(e) => updateApplicationStatus(app._id, e.target.value)}
+                            className="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-2 text-[10px] font-bold outline-none focus:border-primary-500"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="reviewed">Reviewed</option>
+                            <option value="accepted">Accepted</option>
+                            <option value="rejected">Rejected</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
                 ))}
+                {companyApplications.length === 0 && (
+                  <div className="text-center py-10">
+                    <Users className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                    <p className="text-slate-500 text-sm font-medium">No applications found.</p>
+                  </div>
+                )}
               </div>
-
-              <button className="w-full mt-4 py-3 text-center text-sm font-bold text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-xl transition-colors">
-                View All Messages →
-              </button>
             </div>
           </div>
 

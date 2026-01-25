@@ -20,7 +20,12 @@ const applyToJob = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Job not found" });
   }
 
-  // 2. Prevent employer applying to own job
+  // 2. Prevent employer applying to jobs in their own company
+  if (req.user.company && job.company.toString() === req.user.company.toString()) {
+    return res.status(400).json({ message: "You cannot apply to jobs in your own company" });
+  }
+
+  // Also prevent applying if they created the job specifically
   if (job.createdBy.toString() === req.user._id.toString()) {
     return res.status(400).json({ message: "You cannot apply to your own job" });
   }
@@ -63,7 +68,7 @@ const applyToJob = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Get current user applications
- * @route   GET /api/applications/me
+ * @route   GET /api/app/my-applications
  * @access  Private (User)
  */
 const getMyApplications = asyncHandler(async (req, res) => {
@@ -79,7 +84,7 @@ const getMyApplications = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Get applications for a job
- * @route   GET /api/applications/job/:jobId
+ * @route   GET /api/app/job/:jobId
  * @access  Private (Employer)
  */
 const getJobApplications = asyncHandler(async (req, res) => {
@@ -89,8 +94,11 @@ const getJobApplications = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Job not found" });
   }
 
-  // Only job owner can view applications
-  if (job.createdBy.toString() !== req.user._id.toString()) {
+  // Only job owner or company owner can view applications
+  const isJobOwner = job.createdBy.toString() === req.user._id.toString();
+  const isCompanyOwner = req.user.company && job.company.toString() === req.user.company.toString();
+
+  if (!isJobOwner && !isCompanyOwner && req.user.role !== "admin") {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -102,22 +110,46 @@ const getJobApplications = asyncHandler(async (req, res) => {
 });
 
 /**
+ * @desc    Get all applications for a company
+ * @route   GET /api/app/company/:companyId
+ * @access  Private (Employer)
+ */
+const getCompanyApplications = asyncHandler(async (req, res) => {
+  const companyId = req.params.companyId;
+
+  // Verify access: User must be member of this company or admin
+  if (req.user.company?.toString() !== companyId && req.user.role !== "admin") {
+    return res.status(403).json({ message: "Not authorized to view company applications" });
+  }
+
+  const applications = await Application.find({ company: companyId })
+    .populate("job", "title location")
+    .populate("applicant", "name email avatar")
+    .sort({ createdAt: -1 });
+
+  res.json(applications);
+});
+
+/**
  * @desc    Update application status
- * @route   PUT /api/applications/:id/status
+ * @route   PUT /api/app/update/:id
  * @access  Private (Employer)
  */
 const updateApplicationStatus = asyncHandler(async (req, res) => {
-  const { status } = req.body;
+  const { status, id } = req.body;
 
-  const application = await Application.findById(req.params.id)
+  const application = await Application.findById(id || req.params.id)
     .populate("job");
 
   if (!application) {
     return res.status(404).json({ message: "Application not found" });
   }
 
-  // Only company owner can update status
-  if (application.job.createdBy.toString() !== req.user._id.toString()) {
+  // Only company members or admin can update status
+  const isJobOwner = application.job.createdBy.toString() === req.user._id.toString();
+  const isCompanyMember = req.user.company && application.company.toString() === req.user.company.toString();
+
+  if (!isJobOwner && !isCompanyMember && req.user.role !== "admin") {
     return res.status(403).json({ message: "Not authorized" });
   }
 
@@ -132,7 +164,7 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
 
 /**
  * @desc    Delete application (withdraw)
- * @route   DELETE /api/applications/:id
+ * @route   DELETE /api/app/delete/:id
  * @access  Private (Applicant)
  */
 const deleteApplication = asyncHandler(async (req, res) => {
@@ -142,19 +174,20 @@ const deleteApplication = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Application not found" });
   }
 
-  if (application.applicant.toString() !== req.user._id.toString()) {
+  if (application.applicant.toString() !== req.user._id.toString() && req.user.role !== "admin") {
     return res.status(403).json({ message: "Not authorized" });
   }
 
   await Application.findByIdAndDelete(req.params.id);
 
-  res.json({ message: "Application withdrawn successfully" });
+  res.json({ message: "Application deleted successfully" });
 });
 
 module.exports = {
   applyToJob,
   getMyApplications,
   getJobApplications,
+  getCompanyApplications,
   updateApplicationStatus,
   deleteApplication,
 };

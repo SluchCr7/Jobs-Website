@@ -49,7 +49,7 @@ export interface JobsData {
   id: number;
   _id?: string;
   title: string;
-  company: string | { name: string; logo?: { url: string }; logoUrl?: string };
+  company: string | { _id?: string; id?: string | number; name: string; logo?: { url: string }; logoUrl?: string };
   description: string;
 
   location: string;
@@ -69,6 +69,7 @@ export interface JobsData {
 
   /** meta */
   postedDate: string; // ISO date
+  createdBy?: string;
 
   /** optional */
   logo?: string;

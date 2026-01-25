@@ -169,12 +169,29 @@ export default function JobDetailPage() {
             </div>
 
             <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto">
-              <button
-                onClick={() => setShowModal(true)}
-                className="flex-1 btn-primary py-3 px-8 shadow-lg shadow-primary-500/20 whitespace-nowrap"
-              >
-                Apply Now
-              </button>
+              {(() => {
+                const jobCompanyId = typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company?._id || selectedJob.company?.id;
+                const userCompanyId = typeof user?.company === 'string' ? user?.company : user?.company?._id || user?.company?.id;
+                const isMyCompany = user && (userCompanyId === jobCompanyId || user._id === selectedJob.createdBy);
+
+                if (isMyCompany) {
+                  return (
+                    <div className="flex-1 bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600 text-center text-sm font-bold text-slate-500">
+                      You own this company/job
+                    </div>
+                  );
+                }
+
+                return (
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="flex-1 btn-primary py-3 px-8 shadow-lg shadow-primary-500/20 whitespace-nowrap"
+                  >
+                    Apply Now
+                  </button>
+                );
+              })()}
+
               <div className="flex gap-3">
                 <button
                   onClick={handleSave}

@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useAuth } from "@/app/Context/AuthContext";
-import { FiEdit, FiMail, FiMapPin, FiBriefcase, FiCalendar, FiShield } from "react-icons/fi";
+import { FiEdit, FiMail, FiMapPin, FiBriefcase, FiCalendar, FiShield, FiUsers, FiExternalLink } from "react-icons/fi";
 import Image from "next/image";
 import EditProfileModal from "@/app/Components/EditProfileModal";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const UserProfilePage = () => {
@@ -139,31 +140,88 @@ const UserProfilePage = () => {
                 </section>
               )}
 
-              {/* Company Info (for Employers) */}
-              {user.role === "employer" && user.company && (
-                <section className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                  <h2 className="text-2xl font-heading font-bold text-slate-900 dark:text-white mb-4">
-                    Company
+              {/* Company & Professional Affiliation */}
+              {user.company && (
+                <section className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 relative overflow-hidden">
+                  <div className="absolute -top-4 -right-4 w-32 h-32 bg-primary-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                  <h2 className="text-2xl font-heading font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-3">
+                    <FiBriefcase className="text-primary-600" />
+                    Work & Affiliations
                   </h2>
-                  <div className="flex items-center gap-4">
-                    {user.company.logo && (
-                      <Image
-                        src={user.company.logo}
-                        alt={user.company.name}
-                        width={64}
-                        height={64}
-                        className="rounded-lg"
-                      />
-                    )}
-                    <div>
-                      <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                        {user.company.name}
-                      </h3>
-                      {user.company.industry && (
-                        <p className="text-slate-600 dark:text-slate-400">
-                          {user.company.industry}
-                        </p>
-                      )}
+
+                  <div className="flex flex-col md:flex-row gap-6 items-start md:items-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/50 dark:border-slate-800">
+                    <div className="flex-shrink-0">
+                      <div className="w-20 h-20 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center p-3">
+                        {user.company.logo ? (
+                          <Image
+                            src={user.company.logo}
+                            alt={user.company.name}
+                            width={80}
+                            height={80}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <div className="text-3xl font-bold text-primary-600">
+                            {user.company.name.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-3 mb-2">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white truncate">
+                          {user.company.name}
+                        </h3>
+                        {/* Membership Badge */}
+                        {(() => {
+                          const membership = user.company.members?.find((m: any) =>
+                            (typeof m.user === 'string' ? m.user : m.user?._id) === user._id
+                          );
+                          const roleName = membership?.role || (user.role === 'employer' ? 'Owner' : 'Member');
+                          return (
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
+                              {roleName}
+                            </span>
+                          );
+                        })()}
+                      </div>
+
+                      <div className="flex flex-wrap gap-y-2 gap-x-4 text-sm text-slate-500 dark:text-slate-400">
+                        {user.company.industry && (
+                          <span className="flex items-center gap-1.5">
+                            <FiBriefcase className="w-3.5 h-3.5 text-slate-400" />
+                            {user.company.industry}
+                          </span>
+                        )}
+                        {user.company.location && (
+                          <span className="flex items-center gap-1.5">
+                            <FiMapPin className="w-3.5 h-3.5 text-slate-400" />
+                            {user.company.location}
+                          </span>
+                        )}
+                        {user.company.website && (
+                          <a
+                            href={user.company.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 text-primary-600 dark:text-primary-400 hover:underline font-medium"
+                          >
+                            <FiExternalLink className="w-3.5 h-3.5" />
+                            Website
+                          </a>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="w-full md:w-auto mt-2 md:mt-0">
+                      <Link
+                        href={`/Pages/Company/${user.company._id || user.company.id}`}
+                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition w-full shadow-sm"
+                      >
+                        Visit Page
+                      </Link>
                     </div>
                   </div>
                 </section>
