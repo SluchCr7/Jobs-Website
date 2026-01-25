@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, MapPin, Briefcase, TrendingUp, Users, Award, Mail,
   Sparkles, Rocket, Target, Zap, ArrowRight, Star, Building2,
-  Clock, DollarSign, Globe, Filter, X
+  Clock, DollarSign, Globe, Filter, X, Quote, MessageCircle, Calendar,
+  ArrowUpRight, CheckCircle2, ChevronRight
 } from "lucide-react";
 import { articles, categories, testimonials, stats } from "../utils/Data";
 import { JobsData } from "../utils/Types";
@@ -428,6 +429,71 @@ export default function HomePage(): JSX.Element {
         </Container>
       </section>
 
+      {/* Browse Categories Section */}
+      <section className="relative py-24 pb-12 overflow-hidden">
+        <Container>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-bold mb-4 uppercase tracking-widest">
+                Explore Careers
+              </span>
+              <h2 className="text-4xl lg:text-5xl font-heading font-black text-slate-900 dark:text-white mb-4">
+                Browse by <span className="gradient-text">Category</span>
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400 max-w-xl">
+                Find your specialized field and discover thousands of daily updated job listings.
+              </p>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/Pages/Jobs" className="group flex items-center gap-3 text-slate-900 dark:text-white font-bold text-lg hover:text-primary-600 transition-colors">
+                View All Categories
+                <div className="w-10 h-10 rounded-full border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center group-hover:border-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-all">
+                  <ArrowRight size={20} />
+                </div>
+              </Link>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            {categories.map((c, i) => (
+              <motion.div
+                key={c.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                onClick={() => setSelectedCategory(c.id)}
+                className={`group cursor-pointer p-8 rounded-[2rem] border-2 transition-all duration-500 flex flex-col items-center text-center ${selectedCategory === c.id
+                    ? 'bg-primary-500 border-primary-500 shadow-2xl shadow-primary-500/30 -translate-y-2'
+                    : 'bg-white dark:bg-slate-800/40 border-slate-100 dark:border-slate-700/50 hover:-translate-y-2 hover:shadow-xl hover:border-primary-500/30'
+                  }`}
+              >
+                <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner transition-transform group-hover:scale-110 group-hover:rotate-6 ${selectedCategory === c.id ? 'bg-white/20 text-white' : 'bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white'
+                  }`}>
+                  {c.icon || '🚀'}
+                </div>
+                <h3 className={`font-bold text-lg mb-2 transition-colors ${selectedCategory === c.id ? 'text-white' : 'text-slate-900 dark:text-white'
+                  }`}>
+                  {c.name}
+                </h3>
+                <p className={`text-sm font-semibold transition-colors ${selectedCategory === c.id ? 'text-white/80' : 'text-slate-500 dark:text-slate-400'
+                  }`}>
+                  {c.count || 0} Jobs
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
       {/* Featured Jobs Section */}
       <section className="relative py-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
         <Container>
@@ -461,31 +527,6 @@ export default function HomePage(): JSX.Element {
             </div>
           </div>
 
-          {/* Category Pills */}
-          <div className="flex gap-3 overflow-x-auto pb-6 scrollbar-hide mb-8">
-            <button
-              onClick={() => { setSelectedCategory(null); setJobType('any'); setRemoteOnly(false); setQuery(''); }}
-              className={`whitespace-nowrap px-6 py-3 rounded-full font-semibold transition-all ${selectedCategory === null
-                  ? 'gradient-primary text-white shadow-xl shadow-primary-500/30 scale-105'
-                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-105 border-2 border-slate-200 dark:border-slate-700'
-                }`}
-            >
-              All Jobs
-            </button>
-            {categories.map(c => (
-              <button
-                key={c.id}
-                onClick={() => setSelectedCategory(c.id)}
-                className={`whitespace-nowrap px-6 py-3 rounded-full font-semibold transition-all flex items-center gap-2 ${selectedCategory === c.id
-                    ? 'gradient-primary text-white shadow-xl shadow-primary-500/30 scale-105'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:scale-105 border-2 border-slate-200 dark:border-slate-700'
-                  }`}
-              >
-                {c.icon && <span>{c.icon}</span>}
-                {c.name}
-              </button>
-            ))}
-          </div>
 
           {/* Jobs Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -524,6 +565,69 @@ export default function HomePage(): JSX.Element {
         </Container>
       </section>
 
+      {/* How it Works Section */}
+      <section className="relative py-24 bg-slate-50/50 dark:bg-slate-800/10 backdrop-blur-xl">
+        <Container>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl lg:text-5xl font-heading font-black mb-4 text-slate-900 dark:text-white">
+                How it <span className="gradient-text">Works</span>
+              </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-400">
+                Getting your dream job is now easier than ever. Follow these simple steps.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {[
+              {
+                icon: <Users className="w-8 h-8" />,
+                title: "Create an Account",
+                desc: "Sign up as a job seeker or employer to start your journey with us.",
+                color: "bg-blue-500"
+              },
+              {
+                icon: <Search className="w-8 h-8" />,
+                title: "Search Jobs",
+                desc: "Use our advanced filters to find the perfect role matching your skills.",
+                color: "bg-purple-500"
+              },
+              {
+                icon: <CheckCircle2 className="w-8 h-8" />,
+                title: "Apply with Ease",
+                desc: "Submit your application with one click and track your status in real-time.",
+                color: "bg-emerald-500"
+              }
+            ].map((step, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 }}
+                className="relative group"
+              >
+                {i < 2 && (
+                  <div className="hidden md:block absolute top-12 left-1/2 w-full h-0.5 border-t-2 border-dashed border-slate-200 dark:border-slate-700 -z-10" />
+                )}
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-20 h-20 rounded-3xl ${step.color} text-white flex items-center justify-center shadow-2xl mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                    {step.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{step.title}</h3>
+                  <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{step.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
       {/* Top Companies */}
       <section className="relative py-24 overflow-hidden">
         <Container>
@@ -555,23 +659,180 @@ export default function HomePage(): JSX.Element {
                 transition={{ delay: i * 0.05 }}
                 className="group"
               >
-                <Link href={`/Pages/Company/${company.id}`}>
-                  <div className="glass-strong rounded-2xl p-6 h-32 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:shadow-2xl transition-all duration-300 cursor-pointer">
+                <Link href={`/Pages/Company/${company._id}`}>
+                  <div className="glass-strong rounded-2xl p-6 h-32 flex flex-col items-center justify-center gap-3 hover:scale-110 hover:shadow-2xl transition-all duration-300 cursor-pointer border border-transparent hover:border-primary-500/30">
                     <div className="w-16 h-16 relative">
                       <Image
                         width={64}
                         height={64}
-                        src={company.logoUrl || '/placeholder-logo.png'}
+                        src={company.logo || '/placeholder-logo.png'}
                         alt={company.name}
                         className="w-full h-full object-contain opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0"
                       />
                     </div>
-                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors text-center">
+                    <span className="text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors text-center uppercase tracking-wider">
                       {company.name}
                     </span>
                   </div>
                 </Link>
               </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Testimonials Section (Clients Opinions) */}
+      <section className="relative py-24 bg-gradient-to-b from-transparent to-slate-50 dark:to-slate-900/50">
+        <Container>
+          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
+            <div className="max-w-2xl">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <span className="inline-block px-4 py-2 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm font-bold mb-4">
+                  💬 Client Success Stories
+                </span>
+                <h2 className="text-4xl lg:text-5xl font-heading font-black mb-4 text-slate-900 dark:text-white">
+                  What Our <span className="gradient-text">Users Say</span>
+                </h2>
+                <p className="text-lg text-slate-600 dark:text-slate-400">
+                  Real feedback from professionals who found their career paths through our platform.
+                </p>
+              </motion.div>
+            </div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-2"
+            >
+              <div className="flex -space-x-4">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="w-12 h-12 rounded-full border-4 border-white dark:border-slate-800 bg-slate-200 dark:bg-slate-700 overflow-hidden shadow-xl">
+                    <div className="w-full h-full bg-gradient-to-br from-primary-400 to-purple-500" />
+                  </div>
+                ))}
+              </div>
+              <div className="ml-4">
+                <div className="flex text-yellow-500">
+                  {Array(5).fill(0).map((_, i) => <Star key={i} size={16} fill="currentColor" />)}
+                </div>
+                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">4.9/5 Rating</p>
+              </div>
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <motion.div
+                key={t.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="glass-strong p-8 rounded-[2.5rem] relative group hover:-translate-y-2 transition-all duration-500"
+              >
+                <Quote className="absolute top-8 right-8 w-12 h-12 text-primary-500/10 group-hover:text-primary-500/20 transition-colors" />
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/40 dark:to-primary-800/20 flex items-center justify-center text-primary-600 dark:text-primary-400 text-2xl font-black shadow-inner">
+                    {t.name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-900 dark:text-white text-lg">{t.name}</h4>
+                    <p className="text-sm font-medium text-primary-600 dark:text-primary-400">{t.role}</p>
+                  </div>
+                </div>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed italic text-lg transition-colors group-hover:text-slate-900 dark:group-hover:text-white">
+                  "{t.quote}"
+                </p>
+                <div className="mt-6 flex text-yellow-500">
+                  {Array(5).fill(0).map((_, i) => <Star key={i} size={14} fill="currentColor" />)}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Blog/Articles Section */}
+      <section className="relative py-24">
+        <Container>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+              >
+                <span className="inline-block px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-sm font-bold mb-4">
+                  📚 Career Insights
+                </span>
+                <h2 className="text-4xl lg:text-5xl font-heading font-black mb-4 text-slate-900 dark:text-white">
+                  Latest from <span className="gradient-text">Our Blog</span>
+                </h2>
+                <p className="text-lg text-slate-600 dark:text-slate-400">
+                  Expert advice to help you navigate your professional journey
+                </p>
+              </motion.div>
+            </div>
+            <Link href="/Pages/Blog" className="group flex items-center gap-2 text-primary-600 dark:text-primary-400 font-bold text-lg hover:underline underline-offset-8 transition-all">
+              Read All Articles
+              <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {articles.slice(0, 3).map((article, i) => (
+              <motion.article
+                key={article.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="group relative flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-slate-700"
+              >
+                <div className="h-56 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary-400/20 to-purple-500/20 group-hover:scale-110 transition-transform duration-700" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <MessageCircle className="w-16 h-16 text-white/30" />
+                  </div>
+                  <div className="absolute top-6 left-6 flex flex-wrap gap-2">
+                    {article.tags.slice(0, 1).map((tag, idx) => (
+                      <span key={idx} className="px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900/90 text-[10px] font-bold uppercase tracking-wider text-slate-900 dark:text-white backdrop-blur-md">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-8 flex flex-col flex-1">
+                  <div className="flex items-center gap-4 text-xs font-bold text-slate-400 mb-4">
+                    <span className="flex items-center gap-1.5">
+                      <Calendar size={14} />
+                      {article.publishedAt}
+                    </span>
+                    <span className="w-1 h-1 rounded-full bg-slate-300" />
+                    <span>5 min read</span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-primary-600 transition-colors line-clamp-2 leading-tight">
+                    {article.title}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-8 line-clamp-3 text-sm leading-relaxed">
+                    {article.excerpt}
+                  </p>
+                  <Link
+                    href={`/Pages/Article/${article.id}`}
+                    className="mt-auto flex items-center gap-2 text-slate-900 dark:text-white font-bold group/btn"
+                  >
+                    Read More
+                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center group-hover/btn:bg-primary-600 group-hover/btn:text-white transition-all">
+                      <ArrowUpRight size={16} />
+                    </div>
+                  </Link>
+                </div>
+              </motion.article>
             ))}
           </div>
         </Container>

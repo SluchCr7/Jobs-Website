@@ -88,7 +88,7 @@ const CompaniesListingPage = () => {
               <div className="flex items-center gap-5">
                 <div className="w-20 h-20 relative bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-4 flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-600 group-hover:scale-105 transition-transform duration-500">
                   <Image
-                    src={company.logo?.url || company.logoUrl || '/placeholder-logo.png'}
+                    src={company.logo || company.logoUrl || '/placeholder-logo.png'}
                     alt={company.name}
                     fill
                     className="object-contain p-2"

@@ -149,7 +149,7 @@ const CompanyDetailPage = () => {
                 <Image
                   width={200}
                   height={200}
-                  src={company.logo?.url || company.logoUrl || '/placeholder-logo.png'}
+                  src={company.logo || company.logoUrl || '/placeholder-logo.png'}
                   alt={company.name}
                   className="w-full h-full object-contain"
                 />
