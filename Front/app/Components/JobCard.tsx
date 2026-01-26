@@ -21,10 +21,16 @@ export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
         : (job.logo || (typeof job.company === 'object' ? job.company.logoUrl : '') || '');
     const jobId = job._id || job.id;
 
-    // Ownership check
+    // Ownership & Affiliation check
     const jobCompanyId = typeof job.company === 'string' ? job.company : job.company?._id || job.company?.id;
     const userCompanyId = typeof user?.company === 'string' ? user?.company : user?.company?._id || user?.company?.id;
-    const isMyCompany = user && (userCompanyId === jobCompanyId || user._id === job.createdBy);
+
+    // Check members if available (though usually not in list view)
+    const isCompanyMember = (job.company as any)?.members?.some((m: any) =>
+        (typeof m.user === 'string' ? m.user : m.user?._id) === user?._id
+    );
+
+    const isAffiliated = user && (userCompanyId === jobCompanyId || user._id === job.createdBy || isCompanyMember);
 
     return (
         <motion.article
@@ -118,7 +124,7 @@ export default function JobCard({ job, variant = 'grid' }: JobCardProps) {
                 >
                     View Details
                 </Link>
-                {!isMyCompany && (
+                {!isAffiliated && (
                     <button className="flex-1 btn-primary py-2.5 text-sm flex items-center justify-center gap-2 group/btn">
                         Apply
                         <ArrowRight className="w-4 h-4 transition-transform group-hover/btn:translate-x-1" />

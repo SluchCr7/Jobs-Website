@@ -20,9 +20,20 @@ const applyToJob = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Job not found" });
   }
 
-  // 2. Prevent employer applying to jobs in their own company
-  if (req.user.company && job.company.toString() === req.user.company.toString()) {
-    return res.status(400).json({ message: "You cannot apply to jobs in your own company" });
+  // 2. Prevent company members/owners from applying
+  // We check by req.user.company (which is the user's primary company)
+  // OR if the company actually lists them as a member
+  const company = await Company.findById(job.company);
+  if (!company) {
+    return res.status(404).json({ message: "Company linked to this job not found" });
+  }
+
+  const isMember = company.members.some(m => m.user.toString() === req.user._id.toString());
+  const isEmployee = company.employees.some(e => e.toString() === req.user._id.toString());
+  const isOwner = company.owner.toString() === req.user._id.toString();
+
+  if (isMember || isEmployee || isOwner || (req.user.company && req.user.company.toString() === job.company.toString())) {
+    return res.status(400).json({ message: "You cannot apply to jobs in a company you are affiliated with" });
   }
 
   // Also prevent applying if they created the job specifically

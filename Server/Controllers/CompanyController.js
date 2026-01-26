@@ -109,8 +109,9 @@ const getAllCompanies = asyncHandler(async (req, res) => {
  */
 const getCompanyById = asyncHandler(async (req, res) => {
   const company = await Company.findById(req.params.id)
-    .populate("owner", "name email")
-    .populate("employees", "name email");
+    .populate("owner", "name email avatar")
+    .populate("members.user", "name email avatar")
+    .populate("employees", "name email avatar");
 
   if (!company) {
     return res.status(404).json({ message: "Company not found" });
@@ -131,9 +132,13 @@ const updateCompany = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Company not found" });
   }
 
-  // Only owner can update
-  if (company.owner.toString() !== req.user._id.toString()) {
-    return res.status(403).json({ message: "Not authorized" });
+  // Only owner, admin member, or global admin can update
+  const isOwner = company.owner.toString() === req.user._id.toString();
+  const isAdminMember = company.members.some(m => m.user.toString() === req.user._id.toString() && m.role === "admin");
+  const isGlobalAdmin = req.user.role === "admin";
+
+  if (!isOwner && !isAdminMember && !isGlobalAdmin) {
+    return res.status(403).json({ message: "Not authorized to update this company" });
   }
 
   const updateData = {};

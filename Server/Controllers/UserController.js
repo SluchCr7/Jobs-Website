@@ -6,7 +6,13 @@ const { cloudUpload, cloudRemove } = require("../config/cloudUpload");
 const getUserProfile = async (req, res) => {
   const user = await User.findById(req.user._id)
     .select("-password")
-    .populate("company");
+    .populate({
+      path: "company",
+      populate: [
+        { path: "owner", select: "name email avatar" },
+        { path: "members.user", select: "name email avatar" }
+      ]
+    });
   if (!user) return res.status(404).json({ message: "User not found" });
   res.json(user);
 };

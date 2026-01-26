@@ -172,12 +172,20 @@ export default function JobDetailPage() {
               {(() => {
                 const jobCompanyId = typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company?._id || selectedJob.company?.id;
                 const userCompanyId = typeof user?.company === 'string' ? user?.company : user?.company?._id || user?.company?.id;
-                const isMyCompany = user && (userCompanyId === jobCompanyId || user._id === selectedJob.createdBy);
 
-                if (isMyCompany) {
+                // Enhanced affiliation check (including members list)
+                const isCompanyMember = (selectedJob.company as any)?.members?.some((m: any) =>
+                  (typeof m.user === 'string' ? m.user : m.user?._id) === user?._id
+                );
+                const isOwner = (selectedJob.company as any)?.owner === user?._id || (selectedJob.company as any)?.owner?._id === user?._id;
+
+                const isAffiliated = user && (userCompanyId === jobCompanyId || user._id === selectedJob.createdBy || isCompanyMember || isOwner);
+
+                if (isAffiliated) {
                   return (
-                    <div className="flex-1 bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600 text-center text-sm font-bold text-slate-500">
-                      You own this company/job
+                    <div className="flex-1 bg-slate-100 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-600 text-center text-sm font-bold text-slate-500 flex items-center justify-center gap-2">
+                      <FaBuilding className="text-slate-400" />
+                      You are affiliated with this company
                     </div>
                   );
                 }

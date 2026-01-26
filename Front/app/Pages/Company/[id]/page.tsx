@@ -48,14 +48,29 @@ const CompanyDetailPage = () => {
 
   const company = currentCompany;
 
-  // Ownership check
-  const isOwner = useMemo(() => {
-    if (!user || !company) return false;
-    // Check if user is employer and owns this company
-    const userCompanyId = typeof user.company === 'string' ? user.company : user.company?._id || user.company?.id;
-    const companyId = company._id || company.id;
-    return user.role === 'employer' && userCompanyId === companyId;
+  // Permissions check
+  const permissions = useMemo(() => {
+    if (!user || !company) return { isOwner: false, isAdmin: false, isMember: false };
+
+    // Global admin
+    if (user.role === 'admin') return { isOwner: true, isAdmin: true, isMember: true };
+
+    const userId = user._id ;
+    const companyId = company._id ;
+
+    // Check members list (populated from backend)
+    const membership = company.members?.find((m: any) =>
+      (typeof m.user === 'string' ? m.user : m.user?._id) === userId
+    );
+
+    const isOwner = (typeof company.owner === 'string' ? company.owner : company.owner?._id) === userId || membership?.role === 'owner';
+    const isAdmin = membership?.role === 'admin' || isOwner;
+    const isMember = !!membership || (typeof user.company === 'string' ? user.company === companyId : user.company?._id === companyId);
+
+    return { isOwner, isAdmin, isMember };
   }, [user, company]);
+
+  const { isOwner, isAdmin, isMember } = permissions;
 
   const companyJobs = useMemo(() => {
     if (!company || !allJobs) return [];
@@ -197,24 +212,30 @@ const CompanyDetailPage = () => {
               </div>
 
               <div className="flex gap-3 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-                {isOwner ? (
+                {isAdmin ? (
                   <>
                     <button
                       onClick={() => setShowEditModal(true)}
                       className="flex-1 md:flex-none btn-outline px-6 py-3 flex items-center justify-center gap-2"
                     >
-                      <FiEdit /> Edit Profile
+                      <FiEdit /> Edit Company
                     </button>
                     <Link
                       href={`/Dashboard?company=${company._id}`}
                       className="flex-1 md:flex-none btn-primary px-6 py-3 flex items-center justify-center gap-2 whitespace-nowrap"
                     >
-                      <FiList /> View Applications
+                      <FiList /> Manage Jobs
                     </Link>
                   </>
                 ) : (
                   <>
-                    <button className="flex-1 md:flex-none btn-primary px-8 py-3 shadow-lg shadow-primary-500/20">Follow</button>
+                    {isMember ? (
+                      <div className="flex-1 md:flex-none px-6 py-3 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-600">
+                        <FiCheckCircle className="text-emerald-500" /> Member
+                      </div>
+                    ) : (
+                      <button className="flex-1 md:flex-none btn-primary px-8 py-3 shadow-lg shadow-primary-500/20">Follow</button>
+                    )}
                     <button className="p-3 rounded-2xl border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-500 transition group">
                       <FiShare2 className="group-hover:scale-110 transition-transform" />
                     </button>

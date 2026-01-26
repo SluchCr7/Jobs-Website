@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const { Job } = require("../Modules/Job");
-const {User} = require("../Modules/User")
+const { User } = require("../Modules/User")
 
 /**
  * @desc    Create new job
@@ -31,7 +31,7 @@ const createJob = asyncHandler(async (req, res) => {
 
   // 4. Populate and return
   const populatedJob = await Job.findById(job._id)
-    .populate("company", "name logo location")
+    .populate("company", "name logo location members owner")
     .populate("createdBy", "name email");
 
   res.status(201).json({
@@ -92,8 +92,15 @@ const getAllJobs = asyncHandler(async (req, res) => {
  */
 const getJobById = asyncHandler(async (req, res) => {
   const job = await Job.findById(req.params.id)
-    .populate("company", "name logo")
-    .populate("createdBy", "name email");
+    .populate({
+      path: "company",
+      select: "name logo location description members owner website size",
+      populate: [
+        { path: "owner", select: "name email avatar" },
+        { path: "members.user", select: "name email avatar" }
+      ]
+    })
+    .populate("createdBy", "name email avatar");
 
   if (!job) {
     return res.status(404).json({ message: "Job not found" });

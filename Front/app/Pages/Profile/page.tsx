@@ -215,7 +215,22 @@ const UserProfilePage = () => {
                       </div>
                     </div>
 
-                    <div className="w-full md:w-auto mt-2 md:mt-0">
+                    <div className="w-full md:w-auto mt-2 md:mt-0 flex gap-2">
+                      {(() => {
+                        const membership = user.company.members?.find((m: any) =>
+                          (typeof m.user === 'string' ? m.user : m.user?._id) === user._id
+                        );
+                        const isPrivileged = user.role === 'admin' || membership?.role === 'owner' || membership?.role === 'admin' || (typeof user.company.owner === 'string' ? user.company.owner === user._id : user.company.owner?._id === user._id);
+
+                        return isPrivileged && (
+                          <Link
+                            href={`/Pages/Company/${user.company._id || user.company.id}`}
+                            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl text-sm font-bold hover:bg-primary-700 transition w-full shadow-lg shadow-primary-500/20"
+                          >
+                            <FiEdit className="w-4 h-4" /> Manage
+                          </Link>
+                        );
+                      })()}
                       <Link
                         href={`/Pages/Company/${user.company._id || user.company.id}`}
                         className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition w-full shadow-sm"
