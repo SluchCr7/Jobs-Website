@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -84,7 +84,6 @@ const CompanyDetailPage = () => {
       return jobCompanyId === currentId || jobCompanyName === company.name;
     });
   }, [company, allJobs]);
-
   if (companyLoading && !company) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
