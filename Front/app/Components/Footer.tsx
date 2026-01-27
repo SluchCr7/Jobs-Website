@@ -3,15 +3,16 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, ArrowRight, Heart } from 'lucide-react';
+import { toast } from 'sonner';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle subscription logic here
+    if (!email) return;
+    toast.success('Thanks for subscribing to our newsletter!');
     setEmail('');
-    alert('Thanks for subscribing!');
   };
 
   return (
@@ -37,13 +38,20 @@ const Footer = () => {
               Connecting exceptional talent with world-class opportunities. Build your career with the most trusted recruitment platform.
             </p>
             <div className="flex items-center gap-4">
-              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+              {[
+                { Icon: Facebook, url: "https://facebook.com/jobfinder" },
+                { Icon: Twitter, url: "https://twitter.com/jobfinder" },
+                { Icon: Instagram, url: "https://instagram.com/jobfinder" },
+                { Icon: Linkedin, url: "https://linkedin.com/company/jobfinder" }
+              ].map((social, i) => (
                 <a
                   key={i}
-                  href="#"
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary-600 hover:text-white transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-primary-600/20"
                 >
-                  <Icon size={18} />
+                  <social.Icon size={18} />
                 </a>
               ))}
             </div>
@@ -53,11 +61,17 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-bold text-lg mb-6">Explore</h4>
             <ul className="space-y-3">
-              {['Find Jobs', 'Companies', 'Salaries', 'Career Advice', 'Remote Jobs'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-slate-400 hover:text-primary-400 transition-colors text-sm font-medium flex items-center gap-2 group">
+              {[
+                { name: 'Find Jobs', url: '/Pages/Jobs' },
+                { name: 'Companies', url: '/Pages/Companies' },
+                { name: 'Pricing', url: '/Pages/Pricing' },
+                { name: 'Our Blog', url: '/Pages/Blog' },
+                { name: 'Help Center', url: '/Pages/Help' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link href={link.url} className="text-slate-400 hover:text-primary-400 transition-colors text-sm font-medium flex items-center gap-2 group">
                     <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-primary-400 transition-colors"></span>
-                    {item}
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -68,11 +82,17 @@ const Footer = () => {
           <div>
             <h4 className="text-white font-bold text-lg mb-6">For Employers</h4>
             <ul className="space-y-3">
-              {['Post a Job', 'Browse Candidates', 'Talent Solutions', 'Pricing', 'Resources'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-slate-400 hover:text-primary-400 transition-colors text-sm font-medium flex items-center gap-2 group">
+              {[
+                { name: 'Post a Job', url: '/Pages/AddJob' },
+                { name: 'Candidate Search', url: '/Pages/JobsRequests' },
+                { name: 'Employer Dashboard', url: '/Dashboard' },
+                { name: 'Write Article', url: '/Pages/WriteArticle' },
+                { name: 'Create Company', url: '/Pages/CreateCompany' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link href={link.url} className="text-slate-400 hover:text-primary-400 transition-colors text-sm font-medium flex items-center gap-2 group">
                     <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-primary-400 transition-colors"></span>
-                    {item}
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -108,14 +128,14 @@ const Footer = () => {
         <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
           <p>&copy; {new Date().getFullYear()} JobFinder Inc. All rights reserved.</p>
           <div className="flex items-center gap-6">
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-white transition-colors">Cookie Policy</Link>
+            <Link href="/Pages/Help" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/Pages/Help" className="hover:text-white transition-colors">Terms of Service</Link>
+            <Link href="/Pages/Help" className="hover:text-white transition-colors">Cookie Policy</Link>
           </div>
           <div className="flex items-center gap-1">
             <span>Made with</span>
             <Heart size={12} className="text-red-500 fill-red-500" />
-            <span>by DeepMind</span>
+            <span>by SluchCr7</span>
           </div>
         </div>
       </div>
