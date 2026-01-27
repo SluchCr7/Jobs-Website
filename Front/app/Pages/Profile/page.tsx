@@ -149,7 +149,7 @@ const UserProfilePage = () => {
                   <div className="flex flex-col md:flex-row gap-6 items-start md:items-center p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/40 border border-slate-200/50 dark:border-slate-800">
                     <div className="flex-shrink-0">
                       <div className="w-20 h-20 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center p-3">
-                        {user.company.logo ? (
+                        {user.company.logo && (
                           <Image
                             src={user.company.logo}
                             alt={user.company.name}
@@ -157,11 +157,12 @@ const UserProfilePage = () => {
                             height={80}
                             className="w-full h-full object-contain"
                           />
-                        ) : (
-                          <div className="text-3xl font-bold text-primary-600">
-                            {user.company.name.charAt(0)}
-                          </div>
                         )}
+                        {/* // ) : (
+                        //   <div className="text-3xl font-bold text-primary-600">
+                        //     {user.company.name.charAt(0)}
+                        //   </div>
+                        // )} */}
                       </div>
                     </div>
 
