@@ -12,7 +12,7 @@ const login = asyncHandler(async (req, res) => {
     .select("+password")
     .populate({
       path: "company",
-      select: "-createdAt name logo",
+      select: "name logo",
     });
 
   if (!userExist) {
