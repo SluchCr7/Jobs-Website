@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "@/app/Context/AuthContext";
 import { FiEdit, FiMail, FiMapPin, FiBriefcase, FiCalendar, FiShield, FiUsers, FiExternalLink } from "react-icons/fi";
 import Image from "next/image";
@@ -12,7 +12,9 @@ const UserProfilePage = () => {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
+  useEffect(() => {
+    console.log(user)
+  },[user])
   // Redirect if not logged in
   React.useEffect(() => {
     if (!loading && !user) {
