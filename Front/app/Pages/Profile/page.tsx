@@ -49,7 +49,7 @@ const UserProfilePage = () => {
             {/* Avatar */}
             <div className="flex-shrink-0 relative">
               <div className="w-40 h-40 rounded-full border-4 border-white dark:border-slate-800 shadow-xl overflow-hidden bg-slate-200 dark:bg-slate-700">
-                {user.avatar?.url ? (
+                {user.avatar?.url && (
                   <Image
                     src={user.avatar.url}
                     alt={user.name}
@@ -57,10 +57,6 @@ const UserProfilePage = () => {
                     height={160}
                     className="w-full h-full object-cover"
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-slate-400 text-5xl font-bold">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
                 )}
               </div>
             </div>
