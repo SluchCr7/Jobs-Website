@@ -210,3 +210,16 @@ export type State = {
   value: string;
   icon: ComponentType
 }
+
+export interface Notification {
+  _id: string;
+  recipient: string;
+  sender?: any;
+  type: "application" | "message" | "job" | "system" | "general";
+  title: string;
+  message: string;
+  link?: string;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

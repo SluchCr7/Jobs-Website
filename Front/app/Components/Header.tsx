@@ -8,6 +8,7 @@ import { Menu, X, Bell, User, Sun, Moon, LogOut, ChevronDown, LayoutDashboard, H
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../Context/AuthContext';
 import { links } from '@/app/utils/Data';
+import NotificationMenu from './NotificationMenu';
 
 export default function Header() {
   const pathname = usePathname();
@@ -37,8 +38,8 @@ export default function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-            ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-white/20 dark:border-slate-700/50 shadow-lg py-4'
-            : 'bg-transparent py-4'
+          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-white/20 dark:border-slate-700/50 shadow-lg py-4'
+          : 'bg-transparent py-4'
           }`}
       >
         <div className="container-custom">
@@ -74,8 +75,8 @@ export default function Header() {
                     key={link.id}
                     href={link.url}
                     className={`relative px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${isActive
-                        ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                        : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
+                      ? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-400 shadow-sm'
+                      : 'text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-white/50 dark:hover:bg-slate-700/50'
                       }`}
                   >
                     {link.title}
@@ -99,10 +100,7 @@ export default function Header() {
                 <>
                   {/* Notifications */}
                   <div className="relative hidden md:block">
-                    <button className="p-2.5 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative group">
-                      <Bell size={20} />
-                      <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white dark:border-slate-900 animate-pulse"></span>
-                    </button>
+                    <NotificationMenu />
                   </div>
 
                   {/* Profile Dropdown Trigger */}
@@ -223,8 +221,8 @@ export default function Header() {
                     href={link.url}
                     onClick={() => setMobileMenuOpen(false)}
                     className={`block px-5 py-4 rounded-xl text-lg font-semibold transition-colors ${pathname === link.url
-                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
                       }`}
                   >
                     {link.title}

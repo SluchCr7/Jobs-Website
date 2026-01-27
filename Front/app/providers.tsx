@@ -6,6 +6,7 @@ import { AuthProvider } from './Context/AuthContext';
 import { JobProvider } from './Context/JobContext';
 import { CompanyProvider } from './Context/CompanyContext';
 import { ApplicationProvider } from './Context/ApplicationContext';
+import { NotificationProvider } from './Context/NotificationContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     return (
@@ -14,7 +15,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 <JobProvider>
                     <CompanyProvider>
                         <ApplicationProvider>
-                            {children}
+                            <NotificationProvider>
+                                {children}
+                            </NotificationProvider>
                         </ApplicationProvider>
                     </CompanyProvider>
                 </JobProvider>

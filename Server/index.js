@@ -27,6 +27,7 @@ app.use('/api/user', require('./Routers/UserRoute'))
 app.use('/api/job', require('./Routers/JobsRouter'))
 app.use('/api/company', require('./Routers/CompanyRouter'))
 app.use('/api/app', require('./Routers/ApplicationRouter'))
+app.use('/api/notifications', require('./Routers/NotificationRouter'))
 app.use(errorhandler)
 // Listen
 

@@ -4,6 +4,7 @@ const { Job } = require("../Modules/Job");
 const { Company } = require("../Modules/Company");
 
 const { cloudUpload } = require("../config/cloudUpload");
+const { createNotification } = require("./NotificationController");
 
 /**
  * @desc    Apply to a job
@@ -74,6 +75,16 @@ const applyToJob = asyncHandler(async (req, res) => {
   res.status(201).json({
     message: "Application submitted successfully",
     application,
+  });
+
+  // Create notification for job creator
+  await createNotification({
+    recipient: job.createdBy,
+    sender: req.user._id,
+    type: "application",
+    title: "New Job Application",
+    message: `${req.user.name} applied for your job: ${job.title}`,
+    link: `/Pages/Jobs`, // Adjust link as needed
   });
 });
 
@@ -170,6 +181,16 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
   res.json({
     message: "Application status updated",
     application,
+  });
+
+  // Create notification for applicant
+  await createNotification({
+    recipient: application.applicant,
+    sender: req.user._id,
+    type: "application",
+    title: "Application Status Updated",
+    message: `Your application for "${application.job.title}" has been updated to: ${status}`,
+    link: `/Pages/Profile`, // Adjust link as needed for my applications page
   });
 });
 
