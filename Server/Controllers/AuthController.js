@@ -7,8 +7,14 @@ const login = asyncHandler(async (req, res) => {
   const { error } = LoginValidate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
-  // 2. Find user with password
-  const userExist = await User.findOne({ email: req.body.email }).select("+password");
+  // 2. Find user with password + populate company
+  const userExist = await User.findOne({ email: req.body.email })
+    .select("+password")
+    .populate({
+      path: "company",
+      select: "-createdAt name logo",
+    });
+
   if (!userExist) {
     return res.status(400).json({ message: "Invalid email or password" });
   }
@@ -31,8 +37,11 @@ const login = asyncHandler(async (req, res) => {
 
   return res.status(200).json({
     message: "Login successful",
-    user: { ...others, token }, // Embed token in user object for frontend convenience
-    token, // Also return separately
+    user: {
+      ...others,
+      token, // للفرونت
+    },
+    token,
   });
 });
 
