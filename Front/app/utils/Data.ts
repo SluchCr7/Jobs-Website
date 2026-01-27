@@ -351,66 +351,82 @@ export const testimonials: Testimonial[] = [
 ];
 export const articles: Article[] = [
   {
-    id: 1,
+    _id: "1",
     title: "How to Ace Technical Interviews in 2025",
-    excerpt:
-      "A comprehensive, up-to-date guide to mastering technical interviews, including coding challenges, system design, and behavioral assessments.",
-    content: `
-Technical interviews in 2025 require a balanced combination of strong fundamentals, practical problem-solving skills, and clear communication.
-
-This guide covers:
-- Coding interviews: Focus on data structures (arrays, trees, graphs) and algorithms (dynamic programming, greedy strategies). Practice on platforms such as LeetCode and Codeforces with time constraints.
-- System design interviews: Learn how to design scalable systems, understand trade-offs, and communicate architectural decisions clearly. Topics include microservices, databases, caching, and cloud-native patterns.
-- Behavioral interviews: Prepare structured answers using frameworks like STAR (Situation, Task, Action, Result) to demonstrate teamwork, leadership, and problem-solving.
-- AI-assisted interviews: Understand how to work alongside AI tools responsibly, as interviewers increasingly test collaboration with modern developer tooling.
-
-Consistency, mock interviews, and continuous feedback are key factors in achieving success.
-    `,
-    author: "Editorial Team",
-    publishedAt: "2025-01-15",
-    tags: ["Careers", "Technical Interviews", "Software Engineering"]
+    slug: "how-to-ace-technical-interviews-in-2025",
+    excerpt: "A comprehensive, up-to-date guide to mastering technical interviews, including coding challenges, system design, and behavioral assessments.",
+    content: "Technical interviews in 2025 require a balanced combination of strong fundamentals...",
+    author: {
+      _id: "auth-1",
+      name: "Editorial Team",
+      avatar: { url: "https://avatar.iran.liara.run/public/job/designer/male" }
+    },
+    company: {
+      _id: "comp-1",
+      name: "JobFinder",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Apple_logo_grey.svg"
+    },
+    image: {
+      url: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070&auto=format&fit=crop",
+      publicId: null
+    },
+    tags: ["Careers", "Technical Interviews", "Software Engineering"],
+    views: 1200,
+    isPublished: true,
+    createdAt: "2025-01-15T12:00:00Z",
+    updatedAt: "2025-01-15T12:00:00Z"
   },
   {
-    id: 2,
+    _id: "2",
     title: "Remote Work: Best Practices",
-    excerpt:
-      "Actionable strategies to remain productive, collaborative, and visible while building a successful remote career.",
-    content: `
-Remote work has become a permanent fixture in the global workforce. To thrive remotely, professionals must adopt intentional habits and tools.
-
-Key best practices include:
-- Structuring your workday with clear schedules and defined goals.
-- Creating a dedicated workspace that minimizes distractions and supports focus.
-- Mastering asynchronous communication using tools like Slack, Notion, and project management platforms.
-- Maintaining visibility by documenting progress, sharing updates, and actively participating in virtual meetings.
-- Prioritizing mental health through breaks, boundaries, and regular social interaction.
-
-Successful remote professionals treat communication and self-management as core skills, not optional extras.
-    `,
-    author: "Remote Work Council",
-    publishedAt: "2025-02-03",
-    tags: ["Remote Work", "Productivity", "Career Growth"]
+    slug: "remote-work-best-practices",
+    excerpt: "Actionable strategies to remain productive, collaborative, and visible while building a successful remote career.",
+    content: "Remote work has become a permanent fixture in the global workforce...",
+    author: {
+      _id: "auth-2",
+      name: "Remote Work Council",
+      avatar: { url: "https://avatar.iran.liara.run/public/job/developer/female" }
+    },
+    company: {
+      _id: "comp-2",
+      name: "RemoteCo",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg"
+    },
+    image: {
+      url: "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?q=80&w=2070&auto=format&fit=crop",
+      publicId: null
+    },
+    tags: ["Remote Work", "Productivity", "Career Growth"],
+    views: 850,
+    isPublished: true,
+    createdAt: "2025-02-03T10:00:00Z",
+    updatedAt: "2025-02-03T10:00:00Z"
   },
   {
-    id: 3,
+    _id: "3",
     title: "Building Your Personal Brand",
-    excerpt:
-      "A strategic approach to leveraging LinkedIn, portfolios, and content creation to attract recruiters and career opportunities.",
-    content: `
-In a competitive job market, a strong personal brand differentiates you from other professionals with similar technical skills.
-
-This article explains how to:
-- Optimize your LinkedIn profile with a clear headline, quantified achievements, and consistent activity.
-- Build a professional portfolio showcasing real projects, case studies, and measurable outcomes.
-- Share insights through posts, blogs, or talks to demonstrate thought leadership in your field.
-- Maintain brand consistency across platforms, including GitHub, personal websites, and social media.
-- Engage authentically with industry peers to grow credibility and network reach.
-
-A well-crafted personal brand positions you as a solution provider rather than just a job seeker.
-    `,
-    author: "Career Strategy Desk",
-    publishedAt: "2025-02-20",
-    tags: ["Personal Branding", "LinkedIn", "Professional Development"]
+    slug: "building-your-personal-brand",
+    excerpt: "A strategic approach to leveraging LinkedIn, portfolios, and content creation to attract recruiters and career opportunities.",
+    content: "In a competitive job market, a strong personal brand differentiates you...",
+    author: {
+      _id: "auth-3",
+      name: "Career Strategy Desk",
+      avatar: { url: "https://avatar.iran.liara.run/public/job/doctor/male" }
+    },
+    company: {
+      _id: "comp-3",
+      name: "BrandInc",
+      logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg"
+    },
+    image: {
+      url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=2071&auto=format&fit=crop",
+      publicId: null
+    },
+    tags: ["Personal Branding", "LinkedIn", "Professional Development"],
+    views: 2100,
+    isPublished: true,
+    createdAt: "2025-02-20T15:00:00Z",
+    updatedAt: "2025-02-20T15:00:00Z"
   }
 ];
 
