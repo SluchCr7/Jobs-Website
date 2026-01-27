@@ -178,15 +178,31 @@ export interface UserProfileType {
 
 
 export type Article = {
-  id: number;
+  _id: string;
   title: string;
-  excerpt: string;
-  publishedDate?: string;
-  image?: string;
+  slug: string;
   content: string;
-  author: string;
-  publishedAt: string;
-  tags: string[]
+  excerpt: string;
+  author: {
+    _id: string;
+    name: string;
+    avatar: { url: string };
+    bio?: string;
+  };
+  company: {
+    _id: string;
+    name: string;
+    logo?: string | { url: string };
+  };
+  image: {
+    url: string;
+    publicId: string | null;
+  };
+  tags: string[];
+  views: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type Testimonial = {

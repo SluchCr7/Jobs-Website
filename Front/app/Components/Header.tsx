@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
-import { Menu, X, Bell, User, Sun, Moon, LogOut, ChevronDown, LayoutDashboard, HelpCircle, Mail, Heart } from 'lucide-react';
+import { Menu, X, Bell, User, Sun, Moon, LogOut, ChevronDown, LayoutDashboard, HelpCircle, Mail, Heart, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../Context/AuthContext';
 import { links } from '@/app/utils/Data';
@@ -143,8 +143,18 @@ export default function Header() {
                               </Link>
                             )}
                             {user.role === 'employer' && (
-                              <Link href="/Pages/AddJob" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                <LayoutDashboard size={16} /> Post Job
+                              <>
+                                <Link href="/Pages/AddJob" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                  <LayoutDashboard size={16} /> Post Job
+                                </Link>
+                                <Link href="/Pages/WriteArticle" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                  <FileText size={16} /> Write Article
+                                </Link>
+                              </>
+                            )}
+                            {user.role === 'admin' && (
+                              <Link href="/Pages/WriteArticle" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                <FileText size={16} /> Write Article
                               </Link>
                             )}
                             <Link href="/Pages/Saved" className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
