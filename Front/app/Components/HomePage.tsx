@@ -7,14 +7,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, MapPin, Briefcase, TrendingUp, Users, Award, Mail,
   Sparkles, Rocket, Target, Zap, ArrowRight, Star, Building2,
-  Clock, DollarSign, Globe, Filter, X, Quote, MessageCircle, Calendar,
+  Clock, DollarSign, Globe, Filter, X, Quote, MessageCircle, Calendar, Eye,
   ArrowUpRight, CheckCircle2, ChevronRight
 } from "lucide-react";
-import { articles, categories, testimonials, stats } from "../utils/Data";
+import { categories, testimonials, stats } from "../utils/Data";
 import { JobsData } from "../utils/Types";
 import JobCard from "./JobCard";
 import { useJobs } from "../Context/JobContext";
 import { useCompanies } from "../Context/CompanyContext";
+import { useArticles } from "../Context/ArticleContext";
+import { format } from "date-fns";
 
 /* ---------------------- Helper Components ---------------------- */
 const Container: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -39,6 +41,7 @@ export default function HomePage(): JSX.Element {
 
   const { jobs, loading } = useJobs();
   const { companies } = useCompanies();
+  const { articles: dynamicArticles, loading: articlesLoading } = useArticles();
 
   // derived filtered jobs (simple client-side)
   const filteredJobs = useMemo(() => {
@@ -472,8 +475,8 @@ export default function HomePage(): JSX.Element {
                 transition={{ delay: i * 0.1 }}
                 onClick={() => setSelectedCategory(c.id)}
                 className={`group cursor-pointer p-8 rounded-[2rem] border-2 transition-all duration-500 flex flex-col items-center text-center ${selectedCategory === c.id
-                    ? 'bg-primary-500 border-primary-500 shadow-2xl shadow-primary-500/30 -translate-y-2'
-                    : 'bg-white dark:bg-slate-800/40 border-slate-100 dark:border-slate-700/50 hover:-translate-y-2 hover:shadow-xl hover:border-primary-500/30'
+                  ? 'bg-primary-500 border-primary-500 shadow-2xl shadow-primary-500/30 -translate-y-2'
+                  : 'bg-white dark:bg-slate-800/40 border-slate-100 dark:border-slate-700/50 hover:-translate-y-2 hover:shadow-xl hover:border-primary-500/30'
                   }`}
               >
                 <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-inner transition-transform group-hover:scale-110 group-hover:rotate-6 ${selectedCategory === c.id ? 'bg-white/20 text-white' : 'bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white'
@@ -784,56 +787,84 @@ export default function HomePage(): JSX.Element {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {articles.slice(0, 3).map((article, i) => (
-              <motion.article
-                key={article.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="group relative flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-slate-700"
-              >
-                <div className="h-56 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary-400/20 to-purple-500/20 group-hover:scale-110 transition-transform duration-700" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <MessageCircle className="w-16 h-16 text-white/30" />
-                  </div>
-                  <div className="absolute top-6 left-6 flex flex-wrap gap-2">
-                    {article.tags.slice(0, 1).map((tag, idx) => (
-                      <span key={idx} className="px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900/90 text-[10px] font-bold uppercase tracking-wider text-slate-900 dark:text-white backdrop-blur-md">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+            {articlesLoading && dynamicArticles.length === 0 ? (
+              Array(3).fill(0).map((_, i) => (
+                <div key={i} className="h-96 rounded-[2rem] skeleton"></div>
+              ))
+            ) : dynamicArticles.length > 0 ? (
+              dynamicArticles.slice(0, 3).map((article, i) => (
+                <motion.article
+                  key={article._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="group relative flex flex-col bg-white dark:bg-slate-800 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100 dark:border-slate-700"
+                >
+                  <div className="h-56 relative overflow-hidden">
+                    <img
+                      src={article.image.url}
+                      alt={article.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
 
-                <div className="p-8 flex flex-col flex-1">
-                  <div className="flex items-center gap-4 text-xs font-bold text-slate-400 mb-4">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar size={14} />
-                      {article.publishedAt}
-                    </span>
-                    <span className="w-1 h-1 rounded-full bg-slate-300" />
-                    <span>5 min read</span>
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-primary-600 transition-colors line-clamp-2 leading-tight">
-                    {article.title}
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-8 line-clamp-3 text-sm leading-relaxed">
-                    {article.excerpt}
-                  </p>
-                  <Link
-                    href={`/Pages/Article/${article.id}`}
-                    className="mt-auto flex items-center gap-2 text-slate-900 dark:text-white font-bold group/btn"
-                  >
-                    Read More
-                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center group-hover/btn:bg-primary-600 group-hover/btn:text-white transition-all">
-                      <ArrowUpRight size={16} />
+                    <div className="absolute top-6 left-6 flex flex-wrap gap-2">
+                      {article.tags.slice(0, 1).map((tag, idx) => (
+                        <span key={idx} className="px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900/90 text-[10px] font-bold uppercase tracking-wider text-slate-900 dark:text-white backdrop-blur-md">
+                          #{tag}
+                        </span>
+                      ))}
                     </div>
-                  </Link>
-                </div>
-              </motion.article>
-            ))}
+
+                    {/* Company Logo Overlay */}
+                    <div className="absolute bottom-4 left-6 flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-white p-1 shadow-lg overflow-hidden">
+                        <img
+                          src={typeof article.company.logo === 'string' ? article.company.logo : article.company.logo?.url}
+                          alt={article.company.name}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <span className="text-white text-[10px] font-bold drop-shadow-md">{article.company.name}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-8 flex flex-col flex-1">
+                    <div className="flex items-center gap-4 text-xs font-bold text-slate-400 mb-4">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar size={14} />
+                        {format(new Date(article.createdAt), "MMM dd, yyyy")}
+                      </span>
+                      <span className="w-1 h-1 rounded-full bg-slate-300" />
+                      <span className="flex items-center gap-1.5">
+                        <Eye size={14} />
+                        {article.views} views
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 group-hover:text-primary-600 transition-colors line-clamp-2 leading-tight">
+                      {article.title}
+                    </h3>
+                    <p className="text-slate-600 dark:text-slate-400 mb-8 line-clamp-3 text-sm leading-relaxed">
+                      {article.excerpt}
+                    </p>
+                    <Link
+                      href={`/Pages/Article/${article.slug}`}
+                      className="mt-auto flex items-center gap-2 text-slate-900 dark:text-white font-bold group/btn"
+                    >
+                      Read More
+                      <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center group-hover/btn:bg-primary-600 group-hover/btn:text-white transition-all">
+                        <ArrowUpRight size={16} />
+                      </div>
+                    </Link>
+                  </div>
+                </motion.article>
+              ))
+            ) : (
+              <div className="col-span-full py-12 text-center text-slate-400">
+                <p>No career insights found yet.</p>
+              </div>
+            )}
           </div>
         </Container>
       </section>
