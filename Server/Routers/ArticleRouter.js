@@ -8,7 +8,7 @@ const {
     getCompanyArticles,
 } = require("../Controllers/ArticleController");
 const { protect, isEmployerWithCompany } = require("../Middelwares/verifyToken");
-const { photoUpload } = require("../Middelwares/UploadPhoto");
+const photoUpload = require("../Middelwares/UploadPhoto");
 
 // Public routes
 router.get("/", getAllArticles);
