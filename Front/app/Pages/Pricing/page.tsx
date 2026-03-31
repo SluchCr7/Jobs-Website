@@ -22,7 +22,7 @@ const PricingPage = () => {
 
     const plans: Plan[] = [
         {
-            name: "Basic",
+            name: "Free",
             description: "Essential tools for small businesses.",
             monthlyPrice: 0,
             yearlyPrice: 0,
@@ -38,38 +38,38 @@ const PricingPage = () => {
             icon: <Zap className="w-6 h-6 text-emerald-500" />
         },
         {
-            name: "Professional",
+            name: "Pro",
             description: "Advanced features for growing teams.",
             monthlyPrice: 59,
             yearlyPrice: 49,
             features: [
-                "Post 10 active jobs",
-                "Advanced AI filtering",
+                "Post 5 active jobs",
+                "Advanced AI matching",
                 "Priority visibility (30 days)",
                 "24/7 Priority support",
                 "Custom branding",
                 "Team collaboration",
-                "Analytics dashboard"
+                "Detailed analytics"
             ],
-            cta: "Get Started",
+            cta: "Upgrade to Pro",
             popular: true,
             icon: <Star className="w-6 h-6 text-primary-500" />
         },
         {
-            name: "Enterprise",
+            name: "Premium",
             description: "Complete solution for large organizations.",
-            monthlyPrice: "Custom",
-            yearlyPrice: "Custom",
+            monthlyPrice: 199,
+            yearlyPrice: 159,
             features: [
                 "Unlimited job posts",
                 "Dedicated account manager",
-                "API & Webhook access",
-                "SSO & Advanced Security",
+                "Featured listing badge",
+                "ATS Integration support",
                 "Custom workflows",
-                "Premium integrations",
-                "Quarterly strategy reviews"
+                "In-depth market insights",
+                "Priority support line"
             ],
-            cta: "Contact Sales",
+            cta: "Get Premium",
             popular: false,
             icon: <Shield className="w-6 h-6 text-purple-500" />
         }

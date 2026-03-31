@@ -1,7 +1,7 @@
 const { deleteUser, getUserById, getAllUsers, updateUserAvatar, updateUserProfile, getUserProfile } = require("../Controllers/UserController")
 const route = require("express").Router()
-const { protect } = require("../Middelwares/verifyToken") 
-const photoUpload = require("../Middelwares/UploadPhoto");
+const { protect } = require("../Middlewares/verifyToken") 
+const photoUpload = require("../Middlewares/UploadPhoto");
 
 route.route("/delete/:id")
     .delete(protect,deleteUser)

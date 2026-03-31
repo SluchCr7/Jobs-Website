@@ -56,12 +56,40 @@ const userSchema = new mongoose.Schema(
     resume: {
       type: String, // pdf link
     },
-
+    skills: [
+      {
+        type: String,
+        trim: true,
+      }
+    ],
+    experience: [
+      {
+        company: String,
+        role: String,
+        startDate: Date,
+        endDate: Date,
+        description: String,
+      }
+    ],
+    portfolio: {
+      type: String, // link
+    },
+    plan: {
+      type: String,
+      enum: ["free", "pro", "premium"],
+      default: "free",
+    },
     company: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Company",
     },
 
+    verificationOTP: {
+      type: String,
+    },
+    verificationOTPExpire: {
+      type: Date,
+    },
     isVerified: {
       type: Boolean,
       default: false,
@@ -103,6 +131,15 @@ const UpdateUserValidate = (user) => {
     name: Joi.string().min(3).max(50).optional(),
     email: Joi.string().email().optional(),
     bio: Joi.string().max(300).optional().allow(""),
+    skills: Joi.array().items(Joi.string()).optional(),
+    experience: Joi.array().items(Joi.object({
+      company: Joi.string().required(),
+      role: Joi.string().required(),
+      startDate: Joi.date().required(),
+      endDate: Joi.date().optional().allow(null),
+      description: Joi.string().optional().allow(""),
+    })).optional(),
+    portfolio: Joi.string().uri().optional().allow(""),
   });
 
   return schema.validate(user);

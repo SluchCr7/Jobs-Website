@@ -1,10 +1,13 @@
-const { signUp, login, oauthCallback } = require("../Controllers/AuthController")
+const { signUp, login, oauthCallback, verifyEmail, resendOTP } = require("../Controllers/AuthController")
 const passport = require("passport");
 const express = require("express")
 const route = express.Router()
+const { protect } = require("../Middlewares/verifyToken")
 
 route.route("/login").post(login)
 route.route("/register").post(signUp)
+route.route("/verify-email").post(protect, verifyEmail)
+route.route("/resend-otp").post(protect, resendOTP)
 
 // Google Auth
 route.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));

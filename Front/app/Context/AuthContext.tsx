@@ -22,6 +22,8 @@ export interface User {
     createdAt?: string;
     updatedAt?: string;
     token?: string; // Token is appended on login
+    skills?: string[];
+    experience?: any[];
     savedJobs?: string[]; // Array of Job IDs
 }
 
@@ -35,6 +37,8 @@ interface AuthContextType {
     logout: () => void;
     updateProfile: (data: any) => Promise<void>;
     updateAvatar: (formData: FormData) => Promise<void>;
+    verifyEmail: (code: string) => Promise<void>;
+    resendOTP: () => Promise<void>;
     oauthLogin: (token: string) => Promise<void>;
 }
 
@@ -53,7 +57,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 const parsedUser = JSON.parse(storedUser);
                 if (parsedUser) {
                     setUser(parsedUser);
-                    // Optional: Verify token validity here with a backend call
                 }
             } catch (error) {
                 console.error("Failed to parse user from local storage", error);
@@ -65,18 +68,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = async (data: any) => {
         try {
-            setLoading(true); // Set loading true during request
+            setLoading(true);
             const response = await API.post("/auth/login", data);
             const { user, message } = response.data;
 
             setUser(user);
             localStorage.setItem("user", JSON.stringify(user));
             toast.success(message || "Login successful");
-            router.push("/"); // Redirect to home or dashboard
+            
+            if (!user.isVerified) {
+                router.push("/Pages/VerifyEmail");
+            } else {
+                router.push("/");
+            }
         } catch (error: any) {
             console.error("Login Error:", error);
             toast.error(error.response?.data?.message || "Login failed");
-            throw error; // Re-throw for component to handle if needed
+            throw error;
         } finally {
             setLoading(false);
         }
@@ -86,36 +94,54 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             setLoading(true);
             const response = await API.post("/auth/register", data);
-
-            // Backend now returns { user, token, message }
             const { user, message } = response.data;
 
             if (user && user.token) {
                 setUser(user);
                 localStorage.setItem("user", JSON.stringify(user));
                 toast.success(message || "Registration successful");
-
-                // EMPLOYER FLOW: Check if employer needs to create company
-                if (user.role === "employer") {
-                    if (!user.company) {
-                        // Redirect to create company page
-                        router.push("/Pages/CreateCompany");
-                    } else {
-                        // Already has company, go to dashboard/jobs
-                        router.push("/Pages/Jobs");
-                    }
-                } else {
-                    // JOB SEEKER FLOW: Go to job listings
-                    router.push("/Pages/Jobs");
-                }
+                router.push("/Pages/VerifyEmail");
             } else {
-                // Fallback if backend doesn't return auto-login data
                 toast.success(message || "Registration successful. Please login.");
                 router.push("/Pages/Login");
             }
         } catch (error: any) {
             console.error("Register Error:", error);
             toast.error(error.response?.data?.message || "Registration failed");
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const verifyEmail = async (code: string) => {
+        try {
+            setLoading(true);
+            const response = await API.post("/auth/verify-email", { code });
+            const { message } = response.data;
+
+            // Re-fetch profile to update verified status
+            const profileRes = await API.get("/user/profile");
+            const updatedUser = { ...user, ...profileRes.data };
+            setUser(updatedUser as User);
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+            toast.success(message || "Email verified successfully");
+        } catch (error: any) {
+            console.error("Verification Error:", error);
+            throw error;
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const resendOTP = async () => {
+        try {
+            setLoading(true);
+            const response = await API.post("/auth/resend-otp");
+            toast.success(response.data?.message || "OTP resent to your email");
+        } catch (error: any) {
+            console.error("Resend OTP Error:", error);
+            toast.error(error.response?.data?.message || "Failed to resend OTP");
             throw error;
         } finally {
             setLoading(false);
@@ -198,7 +224,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const hasCompany = user?.company ? true : false;
 
     return (
-        <AuthContext.Provider value={{ user, setUser, loading, hasCompany, login, register, logout, updateProfile, updateAvatar, oauthLogin }}>
+        <AuthContext.Provider value={{ 
+            user, 
+            setUser, 
+            loading, 
+            hasCompany, 
+            login, 
+            register, 
+            logout, 
+            updateProfile, 
+            updateAvatar, 
+            oauthLogin,
+            verifyEmail,
+            resendOTP
+        }}>
             {children}
         </AuthContext.Provider>
     );

@@ -11,8 +11,8 @@ const {
 const express = require("express");
 const router = express.Router();
 
-const photoUpload = require("../Middelwares/UploadPhoto");
-const { protect, isEmployer } = require("../Middelwares/verifyToken");
+const photoUpload = require("../Middlewares/UploadPhoto");
+const { protect, isEmployer } = require("../Middlewares/verifyToken");
 
 // ✅ Get my company (must be before /:id to avoid conflict)
 router.get("/my-company", protect, isEmployer, getMyCompany);

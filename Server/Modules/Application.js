@@ -32,8 +32,12 @@ const applicationSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "reviewed", "accepted", "rejected"],
-      default: "pending",
+      enum: ["applied", "reviewing", "shortlisted", "interviewing", "accepted", "rejected"],
+      default: "applied",
+    },
+    feedback: {
+      type: String,
+      maxlength: 500,
     },
 
     appliedAt: {

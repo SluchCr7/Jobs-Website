@@ -69,11 +69,14 @@ const updateUserProfile = async (req, res) => {
 
   // 3. Prepare update object dynamically
   const updateData = {};
-  const { name, email, bio, avatar, resume, password } = req.body;
+  const { name, email, bio, avatar, resume, password, skills, experience, portfolio } = req.body;
 
   if (name) updateData.name = name;
   if (email) updateData.email = email;
   if (bio !== undefined) updateData.bio = bio;
+  if (skills !== undefined) updateData.skills = skills;
+  if (experience !== undefined) updateData.experience = experience;
+  if (portfolio !== undefined) updateData.portfolio = portfolio;
 
   // 4. Update user
   const updatedUser = await User.findByIdAndUpdate(req.user._id, { $set: updateData }, { new: true }).select("-password");

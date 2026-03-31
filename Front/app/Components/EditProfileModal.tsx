@@ -18,10 +18,12 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
     const [avatarLoading, setAvatarLoading] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<any>({
         name: "",
         email: "",
         bio: "",
+        skills: [],
+        experience: [],
     });
 
     // Initialize form with user data
@@ -31,6 +33,8 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                 name: user.name || "",
                 email: user.email || "",
                 bio: user.bio || "",
+                skills: user.skills || [],
+                experience: user.experience || [],
             });
             setAvatarPreview(user.avatar?.url || null);
         }
@@ -244,6 +248,121 @@ export default function EditProfileModal({ isOpen, onClose }: EditProfileModalPr
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 text-right">
                                         {formData.bio.length}/300 characters
                                     </p>
+                                </div>
+
+                                {/* Skills */}
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold text-slate-900 dark:text-white mb-2">
+                                        Skills (comma separated)
+                                    </label>
+                                    <textarea
+                                        name="skills"
+                                        value={Array.isArray(formData.skills) ? formData.skills.join(", ") : ""}
+                                        onChange={(e) => {
+                                            const skillsArray = e.target.value.split(",").map(skill => skill.trim()).filter(skill => skill !== "");
+                                            setFormData({ ...formData, skills: skillsArray });
+                                        }}
+                                        rows={2}
+                                        placeholder="React, Node.js, Design..."
+                                        className="w-full px-4 py-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 transition dark:text-white resize-none"
+                                    />
+                                </div>
+
+                                {/* Experience Sections */}
+                                <div className="mb-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <label className="block text-sm font-bold text-slate-900 dark:text-white">
+                                            Work Experience
+                                        </label>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const newExp = { company: "", role: "", startDate: "", endDate: "", description: "" };
+                                                setFormData({ ...formData, experience: [...(formData.experience || []), newExp] });
+                                            }}
+                                            className="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1"
+                                        >
+                                            + Add Experience
+                                        </button>
+                                    </div>
+                                    <div className="space-y-4">
+                                        {formData.experience?.map((exp: any, index: number) => (
+                                            <div key={index} className="p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-2xl relative shadow-sm">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newExp = [...formData.experience];
+                                                        newExp.splice(index, 1);
+                                                        setFormData({ ...formData, experience: newExp });
+                                                    }}
+                                                    className="absolute top-2 right-2 text-slate-400 hover:text-red-500 transition-colors bg-white dark:bg-slate-800 p-1 rounded-full shadow-sm"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Company Name"
+                                                        value={exp.company}
+                                                        onChange={(e) => {
+                                                            const newExp = [...formData.experience];
+                                                            newExp[index].company = e.target.value;
+                                                            setFormData({ ...formData, experience: newExp });
+                                                        }}
+                                                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none text-sm dark:text-white shadow-sm"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        placeholder="Role / Title"
+                                                        value={exp.role}
+                                                        onChange={(e) => {
+                                                            const newExp = [...formData.experience];
+                                                            newExp[index].role = e.target.value;
+                                                            setFormData({ ...formData, experience: newExp });
+                                                        }}
+                                                        className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none text-sm dark:text-white shadow-sm"
+                                                    />
+                                                    <div className="flex flex-col gap-1">
+                                                        <label className="text-[10px] uppercase font-bold text-slate-400">Start Date</label>
+                                                        <input
+                                                            type="date"
+                                                            value={exp.startDate ? new Date(exp.startDate).toISOString().split('T')[0] : ""}
+                                                            onChange={(e) => {
+                                                                const newExp = [...formData.experience];
+                                                                newExp[index].startDate = e.target.value;
+                                                                setFormData({ ...formData, experience: newExp });
+                                                            }}
+                                                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none text-sm dark:text-white shadow-sm"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col gap-1">
+                                                        <label className="text-[10px] uppercase font-bold text-slate-400">End Date (Optional)</label>
+                                                        <input
+                                                            type="date"
+                                                            value={exp.endDate ? new Date(exp.endDate).toISOString().split('T')[0] : ""}
+                                                            onChange={(e) => {
+                                                                const newExp = [...formData.experience];
+                                                                newExp[index].endDate = e.target.value;
+                                                                setFormData({ ...formData, experience: newExp });
+                                                            }}
+                                                            className="w-full px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none text-sm dark:text-white shadow-sm"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <textarea
+                                                    placeholder="Role description..."
+                                                    value={exp.description}
+                                                    onChange={(e) => {
+                                                        const newExp = [...formData.experience];
+                                                        newExp[index].description = e.target.value;
+                                                        setFormData({ ...formData, experience: newExp });
+                                                    }}
+                                                    rows={2}
+                                                    className="w-full px-3 py-2 mt-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none text-sm dark:text-white shadow-sm resize-none"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* Role Badge (Read-only) */}

@@ -10,9 +10,9 @@ const {
 const route = require("express").Router();
 const {
     protect, admin, sameUser, adminOrSameUser
-} = require("../Middelwares/verifyToken");
+} = require("../Middlewares/verifyToken");
 
-const fileUpload = require("../Middelwares/UploadFile");
+const fileUpload = require("../Middlewares/UploadFile");
 
 route.route("/apply")
     .post(protect, fileUpload.single("resume"), applyToJob)

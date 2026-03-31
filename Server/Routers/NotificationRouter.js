@@ -6,7 +6,7 @@ const {
     markAllAsRead,
     deleteNotification,
 } = require("../Controllers/NotificationController");
-const { protect } = require("../Middelwares/verifyToken");
+const { protect } = require("../Middlewares/verifyToken");
 
 router.use(protect);
 

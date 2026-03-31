@@ -158,7 +158,7 @@ const getCompanyApplications = asyncHandler(async (req, res) => {
  * @access  Private (Employer)
  */
 const updateApplicationStatus = asyncHandler(async (req, res) => {
-  const { status, id } = req.body;
+  const { status, id, feedback } = req.body;
 
   const application = await Application.findById(id || req.params.id)
     .populate("job");
@@ -175,11 +175,13 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     return res.status(403).json({ message: "Not authorized" });
   }
 
-  application.status = status;
+  if (status) application.status = status;
+  if (feedback !== undefined) application.feedback = feedback;
+  
   await application.save();
 
   res.json({
-    message: "Application status updated",
+    message: "Application updated successfully",
     application,
   });
 

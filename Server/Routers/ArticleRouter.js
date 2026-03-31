@@ -7,8 +7,8 @@ const {
     deleteArticle,
     getCompanyArticles,
 } = require("../Controllers/ArticleController");
-const { protect, isEmployerWithCompany } = require("../Middelwares/verifyToken");
-const photoUpload = require("../Middelwares/UploadPhoto");
+const { protect, isEmployerWithCompany } = require("../Middlewares/verifyToken");
+const photoUpload = require("../Middlewares/UploadPhoto");
 
 // Public routes
 router.get("/", getAllArticles);

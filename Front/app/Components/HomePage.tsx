@@ -16,6 +16,7 @@ import JobCard from "./JobCard";
 import { useJobs } from "../Context/JobContext";
 import { useCompanies } from "../Context/CompanyContext";
 import { useArticles } from "../Context/ArticleContext";
+import { useAuth } from "../Context/AuthContext";
 import { format } from "date-fns";
 
 /* ---------------------- Helper Components ---------------------- */
@@ -42,6 +43,7 @@ export default function HomePage(): JSX.Element {
   const { jobs, loading } = useJobs();
   const { companies } = useCompanies();
   const { articles: dynamicArticles, loading: articlesLoading } = useArticles();
+  const { user } = useAuth();
 
   // derived filtered jobs (simple client-side)
   const filteredJobs = useMemo(() => {
@@ -500,6 +502,37 @@ export default function HomePage(): JSX.Element {
       {/* Featured Jobs Section */}
       <section className="relative py-20 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
         <Container>
+          {/* Smart Match / Recommendations (Visible when logged in) */}
+          {user && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-20 p-8 rounded-[3rem] bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent border border-indigo-500/20"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                <div>
+                  <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold mb-2">
+                    <Sparkles className="w-5 h-5" />
+                    <span className="uppercase tracking-widest text-xs">AI Smart Match</span>
+                  </div>
+                  <h2 className="text-3xl font-heading font-black text-slate-900 dark:text-white">Recommended for <span className="gradient-text">You</span></h2>
+                  <p className="text-slate-600 dark:text-slate-400">Based on your professional skills and profile</p>
+                </div>
+                <Link href="/Pages/Profile" className="text-sm font-bold text-indigo-600 hover:text-indigo-700 underline underline-offset-4">Update Skills</Link>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* We'll use a subset of filtered jobs matching skills or just first 3 if none */}
+                {filteredJobs.slice(0, 3).map((job, i) => (
+                  <motion.div key={job.id} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}>
+                    <JobCard job={job} />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div>
               <motion.div

@@ -215,43 +215,80 @@ export default function JobDetailPage() {
           </div>
         </motion.div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+      {/* Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
 
-          {/* Main Description */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="lg:col-span-2 space-y-8"
-          >
-            <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-heading">Overview</h3>
-              <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                {overallText}
-              </p>
+        {/* Main Description */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="lg:col-span-2 space-y-8"
+        >
+          {(() => {
+            const jobCompanyId = typeof selectedJob.company === 'string' ? selectedJob.company : selectedJob.company?._id || selectedJob.company?.id;
+            const userCompanyId = typeof user?.company === 'string' ? user?.company : user?.company?._id || user?.company?.id;
+            const isCompanyMember = (selectedJob.company as any)?.members?.some((m: any) =>
+              (typeof m.user === 'string' ? m.user : m.user?._id) === user?._id
+            );
+            const isOwner = (selectedJob.company as any)?.owner === user?._id || (selectedJob.company as any)?.owner?._id === user?._id;
+            const isAffiliated = user && (userCompanyId === jobCompanyId || user._id === selectedJob.createdBy || isCompanyMember || isOwner);
 
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 font-heading">Requirements</h3>
-              <ul className="space-y-3">
-                {requirements.map((req, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="mt-1.5 w-2 h-2 rounded-full bg-primary-500 shrink-0"></span>
-                    <span className="text-slate-600 dark:text-slate-300">{req}</span>
-                  </li>
-                ))}
-              </ul>
+            if (isAffiliated) {
+              return (
+                <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
+                  <div className="flex items-center justify-between mb-8">
+                    <div>
+                      <h3 className="text-2xl font-bold text-slate-900 dark:text-white font-heading">Applicant Tracking</h3>
+                      <p className="text-slate-500 text-sm mt-1">Manage candidates who applied for this position</p>
+                    </div>
+                    <div className="px-4 py-2 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-300 rounded-xl text-sm font-bold border border-primary-100 dark:border-primary-800">
+                      {(selectedJob as any).applicationsCount || 0} Applicants
+                    </div>
+                  </div>
 
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 font-heading">Qualifications</h3>
-              <ul className="space-y-3">
-                {qualifications.map((qual, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="mt-1.5 w-2 h-2 rounded-full bg-primary-500 shrink-0"></span>
-                    <span className="text-slate-600 dark:text-slate-300">{qual}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
+                  {/* Applicants List (Mocked UI / Link to actual dashboard if available) */}
+                  <div className="space-y-4">
+                    <p className="p-12 text-center text-slate-400 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/30">
+                      Use the <b>Employer Dashboard</b> to manage specific applicant feedback and move candidates through the pipeline (Reviewing, Shortlisting, Interviewing).
+                    </p>
+                    <div className="flex justify-center">
+                       <Link href="/Pages/JobsRequests" className="btn-primary px-6 py-2.5 text-sm">Open Applicant Pipeline</Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          })()}
+
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-sm border border-slate-100 dark:border-slate-700">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 font-heading">Overview</h3>
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+              {overallText}
+            </p>
+
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 font-heading">Requirements</h3>
+            <ul className="space-y-3">
+              {requirements.map((req, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-1.5 w-2 h-2 rounded-full bg-primary-500 shrink-0"></span>
+                  <span className="text-slate-600 dark:text-slate-300">{req}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4 font-heading">Qualifications</h3>
+            <ul className="space-y-3">
+              {qualifications.map((qual, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-1.5 w-2 h-2 rounded-full bg-primary-500 shrink-0"></span>
+                  <span className="text-slate-600 dark:text-slate-300">{qual}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
 
           {/* Sidebar Info */}
           <motion.div

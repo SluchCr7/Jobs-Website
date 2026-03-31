@@ -8,7 +8,7 @@ import { useApplications } from "@/app/Context/ApplicationContext";
 import { useAuth } from "@/app/Context/AuthContext";
 
 export default function MyApplicationsPage() {
-  const [filter, setFilter] = useState<"All" | "pending" | "accepted" | "rejected">("All");
+  const [filter, setFilter] = useState<"All" | "applied" | "reviewing" | "shortlisted" | "interviewing" | "accepted" | "rejected">("All");
   const [search, setSearch] = useState("");
   const { myApplications, loading, fetchMyApplications } = useApplications();
   const { user } = useAuth();
@@ -26,14 +26,20 @@ export default function MyApplicationsPage() {
 
   const getStatusStyle = (status: string) => {
     switch (status) {
-      case "pending":
-        return "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400 border border-amber-200 dark:border-amber-800";
+      case "applied":
+        return "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 border border-blue-200 dark:border-blue-800";
+      case "reviewing":
+        return "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800";
+      case "shortlisted":
+        return "bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-400 border border-purple-200 dark:border-purple-800";
+      case "interviewing":
+        return "bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400 border border-orange-200 dark:border-orange-800";
       case "accepted":
         return "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 border border-green-200 dark:border-green-800";
       case "rejected":
         return "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400 border border-red-200 dark:border-red-800";
-      default: // reviewed etc
-        return "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 border border-blue-200 dark:border-blue-800";
+      default:
+        return "bg-slate-100 dark:bg-slate-900/30 text-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-800";
     }
   };
 

@@ -216,6 +216,40 @@ const toggleSaveJob = asyncHandler(async (req, res) => {
   }
 });
 
+/**
+ * @desc    Get recommended jobs for user based on skills
+ * @route   GET /api/job/recommendations
+ * @access  Private (Job Seeker)
+ */
+const getJobRecommendations = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user || !user.skills || user.skills.length === 0) {
+    // If no skills, return recent jobs
+    const jobs = await Job.find({ status: "open" })
+      .populate("company", "name logo")
+      .limit(10)
+      .sort({ createdAt: -1 });
+    return res.status(200).json(jobs);
+  }
+
+  // Simple keyword-based matching
+  const skillsRegex = user.skills.map(skill => new RegExp(skill, "i"));
+  
+  const recommendedJobs = await Job.find({
+    status: "open",
+    $or: [
+      { title: { $in: skillsRegex } },
+      { category: { $in: skillsRegex } },
+      { description: { $in: skillsRegex } }
+    ]
+  })
+    .populate("company", "name logo")
+    .limit(20)
+    .sort({ createdAt: -1 });
+
+  res.status(200).json(recommendedJobs);
+});
+
 module.exports = {
   createJob,
   getAllJobs,
@@ -224,5 +258,6 @@ module.exports = {
   deleteJob,
   changeJobStatus,
   getAllJobsByCompany,
-  toggleSaveJob
+  toggleSaveJob,
+  getJobRecommendations
 };
